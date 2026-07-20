@@ -13,7 +13,7 @@
 - ③ verdict=insufficient & retry 남음 → Rewriter
 - ④ verdict=insufficient & 한도 소진(exhausted) → Generator
 
-상수: MAX_HOP=2, MAX_RETRY=2(hop별 리셋), LLM 호출 상한 20(assert), top-k 초기값 5(튜닝 대상).
+상수: MAX_HOP=2, MAX_RETRY=2(hop별 리셋), LLM 호출 상한 20(assert), top-k 초기값 5(튜닝 대상) GATE_THRESHOLD=0.70 고정(day 1 정상 질의 분포의 관측 최대 0.693 초과 기준, 튜닝 비대상).
 
 ## 2. state 스키마 (core/state.py)
 

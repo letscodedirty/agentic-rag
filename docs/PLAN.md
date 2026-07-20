@@ -27,7 +27,7 @@
 - **완료 기준: 브라우저에서 같은 질문의 naive vs agentic 비교 화면 동작**
 
 ## Day 5 — 하이퍼파라미터 튜닝
-- 서브셋 48로 회전: k∈{3,5,10}, GATE_THRESHOLD 후보, (청크 모드 미결 시 포함)
+- 서브셋 48로 회전: k∈{3,5,10} (청크 모드 미결 시 포함). GATE_THRESHOLD=0.70 고정(튜닝 비대상)
 - best 조합을 150 전체로 확정 측정 → config/baseline.yaml 고정
 - **완료 기준: best params 표 + `git tag v1-baseline`**
 

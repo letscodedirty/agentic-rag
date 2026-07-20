@@ -62,8 +62,7 @@ cosine DB 구축 완료 후에 수행하라."
 5. [Code] "동작 확인 완료. git commit."
 
 ## Day 5 — 튜닝
-1. [Code] "PLAN.md Day 5 수행. 서브셋 48로 k∈{3,5,10} × GATE_THRESHOLD 후보를
-   각각 평가하고 결과를 표로 정리해줘." (청크 모드 실험 미실시 상태면 포함)
+1. [Code] "PLAN.md Day 5 수행. 서브셋 48로 k∈{3,5,10}을 각각 평가하고 결과를 표로 정리해줘." (청크 모드 실험 미실시 상태면 포함)
 2. [나·낮] 표 보고 best 조합 결정 (기준: Hit Rate 우선, 동률이면 llm_calls 적은 쪽)
 3. [Code] "k=_, threshold=_로 확정. config에 고정하고 150 전체로 확정 측정 후
    commit, git tag v1-baseline."
