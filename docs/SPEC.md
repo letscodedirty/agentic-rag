@@ -150,5 +150,7 @@ make_initial_state(query): 전 필드 빈 값, current_hop_query=query, tried_qu
 LLM: gpt-4o-mini(전 노드 동일) / 임베딩: text-embedding-3-small / distance: cosine /
 한 리포 + agents/{naive, baseline, improved} + 공유 core/ + git tag 박제 /
 temperature=0 / k 초기 5 / 판정 유효 3칸 / 파싱 재실패=sufficient 통과 /
-추출 재실패=exhausted("extract") / re-ranking은 day 6~7 개선 1순위 후보 /
-보존 아이디어: 청크별 판정·k분리·중간답 하이브리드·모델 차등화.
+추출 재실패=exhausted("extract") / day 6~7 improved 우선순위: 1순위 re-ranking / 2순위 본문 청크 추가(id=title::문단,
+내용 중복 최소화 전제, 채점 공정성 위한 라벨 확장 또는 전 시스템 재측정 필요) /
+3순위 청크별 판정·k분리·중간답 하이브리드·모델 차등화.
+단, day 6 논의에서 사용자가 강하게 추천하는 아이디어는 우선순위 상향 가능.

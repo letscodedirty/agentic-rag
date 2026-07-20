@@ -32,8 +32,9 @@
 - **완료 기준: best params 표 + `git tag v1-baseline`**
 
 ## Day 6~7 — 구조 수정 (agents/improved)
-- day 5 결과의 약점 분석 → 수정안 선택 (1순위 re-ranking, 2순위 보존 아이디어:
-  청크별 판정/k분리/중간답 하이브리드/모델 차등화, 3순위 새 구조 — 사용자와 논의 후 확정)
+- day 5 결과의 약점 분석 → 수정안 선택 (1순위 re-ranking, 2순위 본문 청크 추가(중복 최소화+라벨 확장 과제 포함),
+3순위 청크별 판정/k분리/중간답 하이브리드/모델 차등화 — 사용자 강추 아이디어는
+우선순위 상향 가능, 논의 후 확정)
 - agents/improved에 구현 (baseline 동결 유지, core 공유)
 - **완료 기준: improved의 150 전체 평가 완료 (re-ranking이면 MRR 개선 확인)**
 
