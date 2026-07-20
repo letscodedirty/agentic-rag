@@ -1,0 +1,20 @@
+{
+  "root_category": "분류:대한민국의 영화",
+  "max_depth": 3,
+  "docs_found": 16148,
+  "docs_no_intro": 22,
+  "docs_excluded_short(<200)": 14973,
+  "chunks_kept": 1153,
+  "intro_len": {
+    "min": 200,
+    "p10": 216,
+    "p25": 246,
+    "p50": 319,
+    "p75": 454,
+    "p90": 685,
+    "max": 3608,
+    "mean": 397.8
+  },
+  "chunks_with_intro_links": 1137,
+  "avg_intro_links": 10.34
+}
