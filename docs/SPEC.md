@@ -92,22 +92,36 @@ make_initial_state(query): 전 필드 빈 값, current_hop_query=query, tried_qu
 - 임베딩 → top-k 검색 → 생성 1회. hop/retry 없음. LLM 1회.
 - 결과에 동일 evidence 포맷([{"hop":0, "chunk_ids":[...]}]) 기록 → 같은 채점기 사용.
 
-## 4. 데이터·테스트셋 (scripts/)
+## 4. 데이터·테스트셋 (scripts/) — 한국어 위키 영화 도메인 (개정)
 
-1) HotpotQA dev distractor 다운로드
-2) build_dataset.py: bridge 50 + comparison 50 선별
-   (answer 존재, supporting_facts 정확히 2문단, 문단 길이 정상)
-3) derive_singlehop.py: 같은 bridge 50의 hop1 문단으로 LLM 질문화 → 검수 CSV 출력
-   → 사용자가 이상한 행 X 표시 → X만 재생성. (multi와 같은 원천 재활용 — 발표 시 비독립성 명시)
-4) build_db.py: 150개 질문 context 문단 전부 → title 기준 중복 제거(같은 title=같은 텍스트,
-   다르면 긴 쪽 보존+경고) → 문단=청크, id=title, 메타데이터 {title} → ChromaDB(./db)
-   컬렉션 생성 시 metadata={"hnsw:space": "cosine"} 지정 (distance = cosine, 범위 [0,2])
-   → 무결성 체크: 모든 supporting_facts의 (title, sent_idx)가 해당 청크 텍스트에 존재 확인
+언어: 데이터·질문·정답 전부 한국어. 원천: 한국어 위키피디아.
+
+1) collect_wiki.py: 분류 "분류:대한민국의 영화"(+하위 분류)에서 문서 목록 수집(위키 API)
+   → 각 문서의 서두 추출. 서두 = 문서 시작~첫 섹션 제목 전 도입부 전체를 청크 1개로.
+   서두 200자 미만 문서 제외. 서두의 하이퍼링크 목록도 함께 저장(bridge 재료).
+2) build_testset.py: "청크 선행 → 질문 생성"(LLM, 한국어). 정답 청크 id가 생성
+   입력이므로 라벨 매핑 불필요 — answers/hop_answers/gold_answer를 생성 시 직접 기록.
+   - single×정답형 50: 무작위 청크 1개 → 그 청크만으로 답할 질문
+   - multi×정답형(bridge) 50: 청크 A의 하이퍼링크로 연결된 문서 B의 서두 청크 쌍
+     → 2단 질문 (hop1 답 = A→B 연결 엔티티)
+   - multi×탐색형(comparison) 50: 같은 범주 청크 쌍 → 비교 질문 (근거 값을 hop_answers에 기록)
+   - 전 조합 검수 CSV 출력 → 사용자가 이상한 행 X 표시 → X만 재생성
+3) bridge 외부 문서 포함 규칙: 채택된 bridge 쌍의 문서 B가 수집 분류 밖이면
+   그 서두 청크도 DB에 포함 (hop2 정답 청크의 실존 보장).
+4) build_db.py: 수집 청크 전부(+bridge 외부 문서 청크) → title 기준 중복 제거(같은
+   title=같은 텍스트, 다르면 긴 쪽 보존+경고) → 문단=청크, id=title, 메타데이터 {title}
+   → ChromaDB(./db), 컬렉션 생성 시 metadata={"hnsw:space": "cosine"} (distance=[0,2])
+   → 무결성 체크(유형별):
+     single = gold_answer가 정답 청크 텍스트에 존재
+     bridge = hop1 답이 hop1 청크에, gold_answer가 hop2 청크에 존재
+     comparison = 근거 값(hop_answers)이 각 청크에 존재 (gold_answer 자체는 검사 제외)
 5) 라벨: eval/testset.jsonl — {question, combo, hop_type, answers(title set),
-   hop_answers(hop별), gold_answer}. supporting_facts title = 청크 id 직접 매칭.
-- 테스트셋 3조합 × 50 = 150: multi×정답형(bridge) / multi×탐색형(comparison) / single×정답형(파생)
-- 청크 id 규칙: 문단 모드 title / 문장 모드(튜닝 실험 시) title::sent_idx.
+   hop_answers(hop별), gold_answer}
+- 테스트셋 3조합 × 50 = 150: multi×정답형(bridge) / multi×탐색형(comparison) / single×정답형
+- 청크 id 규칙 유지: 문단 모드 title / 문장 모드(튜닝 실험 시) title::sent_idx.
   라벨 변환 함수는 chunk_mode 파라미터로 두 모드 지원.
+- 삭제: derive_singlehop.py (생성 방식에 흡수). Planner 분류 정확도 대조는 유지
+  (hop_type·answer_strategy 라벨이 생성 시 기록되므로).
 
 ## 5. 평가 하네스 (eval/run_eval.py)
 

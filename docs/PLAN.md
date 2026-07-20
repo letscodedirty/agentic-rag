@@ -3,11 +3,15 @@
 각 Day의 지시: "docs/PLAN.md의 Day N 수행. SPEC.md·CLAUDE.md 준수."
 매일 저녁: 평가 실행 → eval/results/ 저장 → git commit. 완료 기준 미달 시 사용자와 논의.
 
-## Day 1 — 기반 + 1-pass baseline
+## Day 1 — 기반 + 1-pass baseline (한국어 위키 영화 도메인)
 - 셋업: 가상환경, .env(OPENAI_API_KEY, LLM_MODEL, EMBED_MODEL, BACKEND_URL), 디렉토리 구조
-- scripts/ 3종 실행: 데이터 선별(100) → single 파생(50, 검수 CSV) → 통합 DB 구축(+무결성 체크)
+- scripts/ 3종 실행: collect_wiki.py(분류 수집+서두 추출) →
+  build_testset.py(3조합×50 생성 → 전 조합 검수 CSV → X만 재생성) →
+  build_db.py(+유형별 무결성 체크)
 - eval/testset.jsonl 생성, run_eval.py 완성 (하네스 먼저!)
 - agents/naive 완성 → **완료 기준: 1-pass의 조합별 Hit Rate·MRR 박제 (150 전체)**
+- **추가 판정 기준: 전 조합 Hit Rate < 0.4이면 임베딩 한국어 성능 부족 의심 →
+  Day 5 튜닝 항목에 임베딩 비교 실험(text-embedding-3-small vs 대안 1종) 추가**
 - 보너스: top1_distance 분포 출력 → GATE_THRESHOLD 후보값 기록
 - (여유 시) 청크 단위 실험: 문단 vs 문장 모드 Hit Rate 비교
 
