@@ -1,0 +1,4 @@
+# agents/baseline 하이퍼파라미터 (Day 5 튜닝 대상은 top_k만)
+top_k: 5
+# 고정값 — 튜닝 비대상 (Day 1 정상 질의 top1_distance 관측 최대 0.693 초과 기준)
+gate_threshold: 0.70

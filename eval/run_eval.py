@@ -24,6 +24,8 @@ sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv  # noqa: E402
 
+from core.config import gate_threshold  # noqa: E402
+
 load_dotenv()
 
 # 라벨 combo → Planner 정답 (분류 정확도 대조용, SPEC §4)
@@ -240,7 +242,7 @@ def main():
             "http": args.http, "tag": tag,
             "llm_model": os.environ.get("LLM_MODEL"),
             "embed_model": os.environ.get("EMBED_MODEL"),
-            "gate_threshold": os.environ.get("GATE_THRESHOLD"),
+            "gate_threshold": gate_threshold(),
             "timestamp": datetime.now().isoformat(timespec="seconds"),
             "elapsed_sec": round(time.time() - t0, 1),
         },
