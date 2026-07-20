@@ -4,6 +4,14 @@
 모든 Day 공통 예외: Code가 SPEC과 다른 방향으로 가면 → "SPEC.md §N과 다르다. 맞춰라."
 에러가 3회 이상 반복되면 → [웹] 새 채팅에 SPEC.md + 에러 전문 첨부하고 원인 분석.
 
+GitHub 규칙 (원격: https://github.com/letscodedirty/agentic-rag):
+- 마일스톤 push 3회는 필수 — [나]가 직접 수행:
+  ① Day 3 완료(baseline 코드+평가 통과) → `git push`
+  ② Day 5 완료(최적 하이퍼파라미터 확정, tag v1-baseline) → `git push && git push --tags`
+  ③ Day 8 완료(improved 확정 측정, tag v2-improved) → `git push && git push --tags`
+- 그 외 Day의 commit 후 push는 선택(백업 겸 권장).
+- push 전 `git status`에 .env가 절대 보이면 안 됨(보이면 중단 후 .gitignore 확인).
+
 ---
 
 ## Day 0.5 — 최초 준비 (10분)
@@ -42,6 +50,7 @@ cosine DB 구축 완료 후에 수행하라."
 2. [Code·저녁] "baseline을 150 전체 평가. naive 결과와 조합별 비교표 +
    Planner 분류 정확도를 보여줘. Day 3 완료 기준 확인 후 commit."
 3. [나] 비교표 확인 — 개선이 안 보이는 조합이 있으면 → [웹] 결과 첨부 분석
+4. [나] ★마일스톤 ①: 완료 기준 충족 확인 후 `git push` (baseline 코드 GitHub 업로드)
 
 ## Day 4 — 통합 (완성품)
 1. [Code] "PLAN.md Day 4 수행. /health → /ask_naive → /ask 순서로 만들고
@@ -58,6 +67,7 @@ cosine DB 구축 완료 후에 수행하라."
 2. [나·낮] 표 보고 best 조합 결정 (기준: Hit Rate 우선, 동률이면 llm_calls 적은 쪽)
 3. [Code] "k=_, threshold=_로 확정. config에 고정하고 150 전체로 확정 측정 후
    commit, git tag v1-baseline."
+4. [나] ★마일스톤 ②: `git push && git push --tags` (최적 하이퍼파라미터 버전 업로드)
 
 ## Day 6 — 구조 수정 결정 + 착수
 1. [웹·아침] 새 채팅에 SPEC.md + Day5 결과 JSON 첨부:
@@ -78,7 +88,8 @@ cosine DB 구축 완료 후에 수행하라."
    naive/baseline/improved × 조합별 Hit Rate·MRR 최종 비교표 생성.
    PLAN.md Day 8의 요구사항 체크리스트도 점검해줘."
 2. [나] 표·체크리스트 확인 → [Code] "commit, git tag v2-improved."
-3. [나] 데모 화면 스크린샷 몇 장 찍어두기 (Day 11 PPT 재료)
+3. [나] ★마일스톤 ③: `git push && git push --tags` (improved 최종 버전 업로드)
+4. [나] 데모 화면 스크린샷 몇 장 찍어두기 (Day 11 PPT 재료)
 
 ## Day 9~10 — 버퍼
 - 지연분 소화. 남으면 [Code]에 하나씩: "넛지형 시연 질문 5개 추가" /
