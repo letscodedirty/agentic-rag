@@ -37,6 +37,11 @@ def route_after_judge(state: AgentState) -> str:
     return "rewrite"
 
 
+def route_after_hop_transition(state: AgentState) -> str:
+    """예외 엣지 (SPEC §1, 순수 함수): 추출 재실패 시 Generator, 아니면 검색."""
+    return "generate" if state["exhausted_reason"] == "extract" else "search"
+
+
 def build_graph(nodes: dict):
     """nodes: {노드명: 함수}. 가짜 노드(테스트)든 실제 노드든 같은 골격을 쓴다."""
     g = StateGraph(AgentState)
@@ -50,7 +55,46 @@ def build_graph(nodes: dict):
         route_after_judge,
         {"hop": "hop_transition", "generate": "generator", "rewrite": "rewriter"},
     )
-    g.add_edge("hop_transition", "search")
+    g.add_conditional_edges(
+        "hop_transition",
+        route_after_hop_transition,
+        {"search": "search", "generate": "generator"},
+    )
     g.add_edge("rewriter", "search")
     g.add_edge("generator", END)
     return g.compile()
+
+
+_graph_cache = {}
+
+
+def run_agent(question: str, top_k: int = 5) -> dict:
+    """하네스·백엔드 진입점: 질문 in → evidence 포맷 포함 결과 out (CLAUDE.md 계약)."""
+    import time
+
+    from agents.baseline.nodes import make_nodes
+    from core.state import make_initial_state
+
+    if top_k not in _graph_cache:
+        _graph_cache[top_k] = build_graph(make_nodes(top_k))
+    t0 = time.time()
+    final = _graph_cache[top_k].invoke(
+        make_initial_state(question), config={"recursion_limit": 50}
+    )
+    return {
+        "answer": final["answer"],
+        "evidence": final["evidence"],
+        "sources": final["sources"],
+        "plan": final["plan"],
+        "strategy": final["answer_strategy"],
+        "judge_history": final["judge_history"],
+        "intermediate_answers": final["intermediate_answers"],
+        "rewrite_history": final["tried_queries"][1:],
+        "retry_total": max(0, len(final["tried_queries"]) - 1),
+        "hop_reached": final["hop_index"],
+        "exhausted": final["exhausted"],
+        "exhausted_reason": final["exhausted_reason"],
+        "llm_calls": final["llm_call_count"],
+        "top1_distance": final["top1_distance"],
+        "elapsed_sec": round(time.time() - t0, 2),
+    }

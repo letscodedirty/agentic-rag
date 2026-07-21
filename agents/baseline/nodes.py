@@ -202,6 +202,253 @@ def _finish_judge(state: AgentState, verdict: str, source: str, relevance: str,
     return upd
 
 
+# ---------- hop전환 (LLM 0~1회) ----------
+
+EXTRACT_SYSTEM = (
+    "너는 문서에서 요구된 값만 정확히 추출하는 도구다. 반드시 JSON으로만 답하라."
+)
+
+EXTRACT_USER_TMPL = """아래 문서들에서 다음 질의의 답만 추출하라.
+
+[질의] <<HOP_QUERY>>
+
+[문서]
+<<DOCS>>
+
+규칙:
+1. answer는 질의가 묻는 대상의 이름/값만 — 짧은 구(30자 이내). 설명·문장 금지.
+2. 문서에 답이 없으면 answer를 빈 문자열 ""로 하라. 추측 금지.
+
+JSON: {"answer": "..."}"""
+
+
+def hop_transition_node(state: AgentState) -> dict:
+    """bridge: 중간 답 추출 → {hop1} 치환. comparison: 추출 생략.
+
+    공통 쓰기: hop_index+1, retry_count=0(유일 리셋), evidence·sources append.
+    추출 재실패 시 공통 쓰기 생략 + exhausted=True/reason="extract" (SPEC §3).
+    """
+    plan = state["plan"]
+    chunk_ids = [r["id"] for r in state["search_results"]]
+    common = {
+        "hop_index": state["hop_index"] + 1,
+        "retry_count": 0,
+        "evidence": state["evidence"] + [
+            {"hop": state["hop_index"], "chunk_ids": chunk_ids}],
+        "sources": state["sources"] + [
+            {"hop": state["hop_index"], "titles": chunk_ids}],
+    }
+    if plan.get("hop_type") == "comparison":
+        return {**common, "current_hop_query": plan["search_queries"][1]}
+
+    # bridge: 중간 답 추출 (빈 답 → 1회 재시도)
+    docs = "\n\n".join(f"[{r['title']}]\n{r['text']}" for r in state["search_results"])
+    user = (EXTRACT_USER_TMPL
+            .replace("<<HOP_QUERY>>", state["current_hop_query"])
+            .replace("<<DOCS>>", docs))
+    counter = {"llm_call_count": state["llm_call_count"]}
+    answer = ""
+    for _ in range(2):
+        raw = call_llm(
+            counter,
+            [{"role": "system", "content": EXTRACT_SYSTEM},
+             {"role": "user", "content": user}],
+            json_mode=True,
+        )
+        try:
+            answer = (json.loads(raw).get("answer") or "").strip()
+        except (json.JSONDecodeError, TypeError, AttributeError):
+            answer = ""
+        if answer:
+            break
+    if not answer:  # 재실패: 전환 미발생 — 공통 쓰기 생략 (승인 수정 1)
+        return {"exhausted": True, "exhausted_reason": "extract",
+                "llm_call_count": counter["llm_call_count"]}
+    return {
+        **common,
+        "intermediate_answers": state["intermediate_answers"] + [answer],
+        "current_hop_query": plan["search_queries"][1].replace("{hop1}", answer),
+        "llm_call_count": counter["llm_call_count"],
+    }
+
+
+# ---------- Rewriter (LLM 1회, 3모드) ----------
+
+REWRITER_SYSTEM = "너는 실패한 검색 질의를 개선하는 전문가다. 반드시 JSON으로만 답하라."
+
+REWRITER_USER_TMPL = """검색이 실패했다. 아래 정보를 바탕으로 '다음 검색 질의'를 새로 작성하라.
+
+[원본 질문] <<QUERY>>  ← 최종 목표(앵커). 이 의도에서 벗어나지 마라.
+[현재 hop 질의] <<HOP_QUERY>>
+[이미 시도한 질의] <<TRIED>>  ← 이것들과 반드시 달라야 한다.
+[판정 사유] <<REASON>>
+[부족한 정보] <<MISSING>>
+[직전 검색 결과 발췌]
+<<SNIPPETS>>
+
+[재작성 지시]
+<<MODE>>
+<<LAST_CHANCE>>
+
+<<JSON_SPEC>>"""
+
+MODE_C = """검색 결과가 주제와 완전히 동떨어져 문지기에 차단됐다. 질의를 전면 재작성하라 —
+다른 핵심 개체명, 다른 표현, 다른 관점을 탐색적으로 시도하라. 기존 질의의 단어를
+그대로 재조합하는 수준은 금지."""
+
+MODE_A = """검색 결과가 질의의 대상과 다른 주제를 가리켰다. 검색 방향을 전환하라 —
+대상을 더 정확히 특정하는 표현(정확한 작품 제목, 인물 전체 이름, 구별 속성)으로
+바꿔서 엉뚱한 문서가 잡히지 않게 하라."""
+
+MODE_B = """검색 방향은 맞지만 정보가 부족하다. [부족한 정보]를 정면으로 겨냥하는 질의로
+보강하라. 만약 부족한 정보가 현재 문서가 아니라 '다른 문서'(예: 언급된 인물·작품의
+문서)에 있을 것으로 보이면 2단계 계획을 함께 제안하라 — replan의
+hop2_query_template에는 1단계 답이 들어갈 자리에 {hop1}을 문자 그대로 남겨라.
+한 문서로 해결될 문제면 replan은 null."""
+
+JSON_SPEC_AC = 'JSON: {"new_query": "..."}'
+JSON_SPEC_B = """JSON: {"new_query": "...", "replan": null 또는
+{"hop_type": "bridge", "hop2_query_template": "{hop1} ..."}}"""
+
+LAST_CHANCE = "이번이 마지막 기회다. 지금까지와 확연히 다른 각도로 과감하게 전환하라."
+
+
+def _rewriter_mode(state: AgentState) -> str:
+    if state["judge_source"] == "gatekeeper":
+        return "C"
+    if state["relevance"] == "low":
+        return "A"
+    return "B"
+
+
+def rewriter_node(state: AgentState) -> dict:
+    mode = _rewriter_mode(state)
+    snippets = "\n".join(
+        f"[{r['title']}] {r['text'][:120]}" for r in state["search_results"][:3]
+    ) or "(없음)"
+    user = (REWRITER_USER_TMPL
+            .replace("<<QUERY>>", state["query"])
+            .replace("<<HOP_QUERY>>", state["current_hop_query"])
+            .replace("<<TRIED>>", json.dumps(state["tried_queries"], ensure_ascii=False))
+            .replace("<<REASON>>", state["judge_reason"] or "(없음)")
+            .replace("<<MISSING>>", state["missing"] or "(없음)")
+            .replace("<<SNIPPETS>>", snippets)
+            .replace("<<MODE>>", {"A": MODE_A, "B": MODE_B, "C": MODE_C}[mode])
+            .replace("<<LAST_CHANCE>>",
+                     LAST_CHANCE if state["retry_count"] + 1 >= MAX_RETRY else "")
+            .replace("<<JSON_SPEC>>", JSON_SPEC_B if mode == "B" else JSON_SPEC_AC))
+    counter = {"llm_call_count": state["llm_call_count"]}
+    new_query, replan = "", None
+    for attempt in range(2):  # 중복이면 1회 재요청 (SPEC §3)
+        user_txt = user if attempt == 0 else (
+            user + "\n\n주의: 직전 제안이 [이미 시도한 질의]와 중복이었다. "
+                   "목록에 없는 질의를 제안하라.")
+        raw = call_llm(
+            counter,
+            [{"role": "system", "content": REWRITER_SYSTEM},
+             {"role": "user", "content": user_txt}],
+            json_mode=True,
+        )
+        try:
+            out = json.loads(raw)
+            new_query = str(out.get("new_query") or "").strip()
+            replan = out.get("replan") if mode == "B" else None
+        except (json.JSONDecodeError, TypeError):
+            new_query, replan = "", None
+        if new_query and new_query not in state["tried_queries"]:
+            break
+    if not new_query:  # 파싱 재실패 안전판 — 원본 기반 변형으로 전진
+        new_query = f"{state['query']} (재검색 {state['retry_count'] + 1})"
+    upd = {
+        "current_hop_query": new_query,
+        "tried_queries": state["tried_queries"] + [new_query],
+        "retry_count": state["retry_count"] + 1,  # 유일한 증가 지점
+        "llm_call_count": counter["llm_call_count"],
+    }
+    # 사후 재계획 가드: 모드 B & single_hop & hop0 & 유효 템플릿일 때만 (SPEC §3)
+    if (mode == "B" and isinstance(replan, dict)
+            and state["plan"].get("query_type") == "single_hop"
+            and state["hop_index"] == 0):
+        tmpl = str(replan.get("hop2_query_template") or "")
+        if replan.get("hop_type") == "bridge" and "{hop1}" in tmpl:
+            upd["plan"] = {"query_type": "multi_hop", "hop_type": "bridge",
+                           "search_queries": [new_query, tmpl],
+                           "reason": "사후 재계획"}
+    return upd
+
+
+# ---------- Generator (LLM 1회, 2×2) ----------
+
+GENERATOR_SYSTEM = "너는 제공된 문서만 근거로 답하는 한국어 QA 어시스턴트다."
+
+GEN_INSTR = {
+    ("정답형", False): "질문에 대한 정답을 첫 문장에서 명확히 제시하고, 근거를 1~2문장 덧붙여라.",
+    ("탐색형", False): ("각 대상의 근거 값을 항목별로 나열한 뒤"
+                     "(예: '- 박하사탕: 1999년 개봉'), "
+                     "마지막 줄에 비교 결론을 한 문장으로 제시하라."),
+    ("정답형", True): ("검색이 충분한 근거를 찾지 못한 채 종료됐다. 확정적인 답을 "
+                    "단정하지 마라. 문서에서 확인되는 부분까지만 정리하고, "
+                    "무엇을 확인할 수 없었는지 명시하라."),
+    ("탐색형", True): ("검색이 충분한 근거를 찾지 못한 채 종료됐다. 확인된 대상의 "
+                    "근거 값만 나열하고, 확인하지 못한 값을 명시하라. 단정적 비교 "
+                    "결론 대신 제한적 결론(또는 '비교 불가')을 밝혀라."),
+}
+
+GEN_COMMON_RULES = """공통 규칙:
+- 제공 문서에 없는 내용은 추측하지 말고 "문서에서 확인할 수 없습니다"라고 밝혀라.
+- 답변 끝에 근거 문서를 (출처: title1, title2) 형식으로 표기하라."""
+
+
+def fetch_chunks(chunk_ids: list) -> list:
+    """comparison hop1 문서 재조회 — DB 접근은 검색 계층(core/db) 경유 (SPEC §3)."""
+    return db.get_by_ids(chunk_ids)
+
+
+def generator_node(state: AgentState) -> dict:
+    plan = state["plan"] or {}
+    docs_list = list(state["search_results"])
+    # comparison: hop1 문서를 evidence의 chunk_ids로 재조회해 포함 (SPEC §3)
+    if plan.get("hop_type") == "comparison" and state["evidence"]:
+        hop1_ids = state["evidence"][0]["chunk_ids"][:3]
+        have = {r["id"] for r in docs_list}
+        docs_list = [c for c in fetch_chunks(hop1_ids) if c["id"] not in have] + docs_list
+    strategy = state["answer_strategy"] if state["answer_strategy"] in ("정답형", "탐색형") else "정답형"
+    instr = GEN_INSTR[(strategy, bool(state["exhausted"]))]
+    inter = (f"\n[1단계에서 확인한 중간 답] {', '.join(state['intermediate_answers'])}"
+             if state["intermediate_answers"] else "")
+    docs = "\n\n".join(f"[{r['title']}]\n{r['text']}" for r in docs_list) or "(문서 없음)"
+    user = (f"[질문] {state['query']}{inter}\n\n[문서]\n{docs}\n\n"
+            f"[작성 지시]\n{instr}\n\n{GEN_COMMON_RULES}")
+    counter = {"llm_call_count": state["llm_call_count"]}
+    answer = call_llm(
+        counter,
+        [{"role": "system", "content": GENERATOR_SYSTEM},
+         {"role": "user", "content": user}],
+    )
+    chunk_ids = [r["id"] for r in state["search_results"]]
+    return {
+        "answer": answer,
+        "evidence": state["evidence"] + [
+            {"hop": state["hop_index"], "chunk_ids": chunk_ids}],
+        "sources": state["sources"] + [
+            {"hop": state["hop_index"], "titles": chunk_ids}],
+        "llm_call_count": counter["llm_call_count"],
+    }
+
+
+def make_nodes(top_k: int = None) -> dict:
+    """실제 노드 세트. top_k 지정 시 검색 노드만 해당 k로 동작."""
+    if top_k is None:
+        search = search_node
+    else:
+        def search(state):
+            results, top1 = db.search(state["current_hop_query"], k=top_k)
+            return {"search_results": results, "top1_distance": top1}
+    return {"planner": planner_node, "search": search, "judge": judge_node,
+            "hop_transition": hop_transition_node, "rewriter": rewriter_node,
+            "generator": generator_node}
+
+
 def judge_node(state: AgentState) -> dict:
     gate = gate_threshold()
     # 문지기: LLM 없이 즉시 차단

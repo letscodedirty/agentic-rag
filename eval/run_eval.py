@@ -202,6 +202,8 @@ def main():
                 "retry_total": res.get("retry_total"),
                 "exhausted": res.get("exhausted"),
                 "exhausted_reason": res.get("exhausted_reason"),
+                "rewrite_history": res.get("rewrite_history"),
+                "elapsed_sec": res.get("elapsed_sec"),
             }
         )
         if i % 25 == 0:

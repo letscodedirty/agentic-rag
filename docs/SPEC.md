@@ -12,6 +12,8 @@
 - ② verdict=sufficient & 마지막 hop → Generator
 - ③ verdict=insufficient & retry 남음 → Rewriter
 - ④ verdict=insufficient & 한도 소진(exhausted) → Generator
+- 예외 엣지: hop전환 뒤 exhausted_reason=='extract'면 Generator, 아니면 검색
+  (판정 기반 분기가 아닌 실패 처리 — Judge 뒤 유일 분기 조항은 판정 분기에 한함)
 
 상수: MAX_HOP=2, MAX_RETRY=2(hop별 리셋), LLM 호출 상한 20(assert), top-k 초기값 5(튜닝 대상) GATE_THRESHOLD=0.70 고정(day 1 정상 질의 분포의 관측 최대 0.693 초과 기준, 튜닝 비대상).
 
@@ -64,7 +66,7 @@ make_initial_state(query): 전 필드 빈 값, current_hop_query=query, tried_qu
   출력: verdict, relevance, sufficiency, reason, missing
 - 모순 칸 처리: 프롬프트에 "rel low면 suf 반드시 low" 명시 + 검증에서
   (rel low & suf high) 나오면 rel=high 교정 후 sufficient 전진
-- **exhausted 판정·기록은 Judge 단일 책임**: insufficient이고
+- **exhausted 판정·기록은 Judge 단일 책임(예외: 'extract'만 hop전환이 기록)**: insufficient이고
   (retry_count>=MAX_RETRY → "retry" / hop_index>=MAX_HOP → "hop") 시 exhausted=True 기록
 - judge_history append. 파싱 실패 → 1회 재호출 → 재실패 시 sufficient 통과 + "parse_fail" 기록
 
@@ -73,7 +75,8 @@ make_initial_state(query): 전 필드 빈 값, current_hop_query=query, tried_qu
   → search_queries[1]의 {hop1} 치환 → current_hop_query
 - comparison: 추출 생략, search_queries[1] 그대로 current_hop_query
 - 공통: hop_index+1, retry_count=0, evidence append({"hop": 이전hop, "chunk_ids": ...})
-- 추출이 빈 문자열 → 1회 재시도 → 재실패 시 exhausted_reason="extract"로 Generator행
+- 추출이 빈 문자열 → 1회 재시도 → 재실패 시 공통 쓰기(hop_index+1·retry 리셋·
+  evidence·sources append) 생략, exhausted=True + exhausted_reason="extract"로 Generator행
 
 ### Rewriter (LLM 1회)
 - 모드: judge_source=gatekeeper → C 탐색적 전면 수정 / relevance=low → A 방향 전환 /
@@ -87,6 +90,8 @@ make_initial_state(query): 전 필드 빈 값, current_hop_query=query, tried_qu
 - 프롬프트 2×2: (정답형/탐색형) × (정상/exhausted). 탐색형=근거 값 나열 후 비교 결론.
   공통: "제공 문서만 근거, 없으면 '문서에서 확인할 수 없습니다'" + title 출처 표기
 - evidence append(최종 search_results), sources 기록, answer 작성
+- comparison일 때 evidence의 hop1 chunk_ids를 fetch_chunks(id 조회, core/db 경유)로
+  재조회해 문서에 포함
 
 ### agents/naive (1-pass)
 - 임베딩 → top-k 검색 → 생성 1회. hop/retry 없음. LLM 1회.

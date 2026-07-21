@@ -89,6 +89,16 @@ def search(query: str, k: int = 5):
     return results, top1
 
 
+def get_by_ids(ids: list) -> list:
+    """chunk id 목록 → [{id, title, text}]. Generator의 comparison hop1 재조회용 (SPEC §3)."""
+    coll = get_collection()
+    res = coll.get(ids=ids, include=["documents", "metadatas"])
+    return [
+        {"id": i, "title": m["title"], "text": d}
+        for i, d, m in zip(res["ids"], res["documents"], res["metadatas"])
+    ]
+
+
 def db_info() -> dict:
     """/health용: 청크 수 + distance space."""
     coll = get_collection()
