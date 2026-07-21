@@ -82,9 +82,10 @@ cosine DB 구축 완료 후에 수행하라."
 ## Day 7 — 구조 수정 완성
 1. [Code] "improved 완성 후 150 전체 평가. baseline과 비교표 보여줘.
    (re-ranking이면 MRR 변화 중심으로.) 완료 기준 확인 후 commit."
-2. [Code] "backend에 /ask_improved 추가(응답 계약 /ask와 동일), frontend 비교
-   탭을 naive|baseline|improved 3열로 확장. 브라우저에서 같은 질문 3-way 동작 확인."
-   (기존 2번은 3번으로)
+2. [Code] "backend에 /ask_improved 추가(응답 계약 /ask와 동일). frontend:
+   단독 탭에 시스템 선택기(baseline|improved, 기본값 improved) 추가, 비교 탭을
+   naive|baseline|improved 3열로 확장. 브라우저에서 단독 탭 improved 동작 +
+   같은 질문 3-way 동작 확인."
 3. [나] 비교표 확인 — 개선이 없으면 → [웹] Day 6 채팅 이어서 원인 분석·조정 논의
 
 ## Day 8 — 최종 측정

@@ -146,11 +146,13 @@ make_initial_state(query): 전 필드 빈 값, current_hop_query=query, tried_qu
   intermediate_answers, retry_total, hop_reached, exhausted(+reason), llm_calls,
   sources[{hop, titles}], elapsed_sec
 - /ask_naive 응답: answer, sources, llm_calls, elapsed_sec
-- Streamlit 탭 2개: ① Agentic 단독(입력+top_k 슬라이더 → 답변+전략 뱃지+출처,
-  expander: 계획/hop별 판정 표/재작성 이력/중간 답/통계, exhausted 경고 박스)
-  ② 비교(같은 질문 → naive|agentic 좌우). 공통: /health 사전 확인, session_state 유지. day 7 improved 완성 후:
-POST /ask_improved 추가(응답 계약 /ask와 동일), 비교 탭을
-naive|baseline|improved 3열로 확장(입력·실행은 단일).
+- Streamlit 탭 2개: ① Agentic 단독(시스템 선택기: baseline|improved — day 7 전에는
+  baseline만, day 7 후 기본값 improved. 입력+top_k 슬라이더 → 선택 시스템의
+  답변+전략 뱃지+출처, expander: 계획/hop별 판정 표/재작성 이력/중간 답/통계
+  + improved 고유 정보 패널 추가 가능, exhausted 경고 박스)
+  ② 비교(같은 질문 → naive|agentic 좌우). 공통: /health 사전 확인, session_state 유지.
+  day 7 improved 완성 후: POST /ask_improved 추가(응답 계약 /ask와 동일),
+  비교 탭을 naive|baseline|improved 3열로 확장(입력·실행은 단일).
 
 ## 7. 확정 결정 요약 (근거는 노션 페이지 참조)
 
