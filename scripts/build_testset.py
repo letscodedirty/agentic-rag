@@ -16,6 +16,7 @@ import json
 import random
 import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -157,8 +158,18 @@ JSON: {{"question": "...", "answer": "..."}}"""
     }
 
 
-def gen_bridge(a: dict, b: dict):
+def gen_bridge(a: dict, b: dict, avoid_questions: list = None):
+    """avoid_questions: 같은 쌍의 기존 질문들 — 같은 속성을 다시 묻지 않도록 회피 지시."""
     bt_a, bt_b = base_title(a["title"]), base_title(b["title"])
+    avoid = ""
+    if avoid_questions:
+        joined = "\n".join(f"  - {q}" for q in avoid_questions)
+        avoid = f"""
+11. 다음 기존 질문들과 '같은 속성'을 묻는 것은 금지다. B의 서두에서 이들과
+   다른 사실(다른 인물·연도·수치·장소·작품 등)을 골라 물어라. 다른 사실이
+   없으면 {{"skip": true}}.
+{joined}
+"""
     user = f"""2단계(multi-hop) 한국어 질문 1개를 만들어라.
 
 [1단계 문서 A] 제목: {a['title']}
@@ -196,7 +207,7 @@ def gen_bridge(a: dict, b: dict):
 9. 질문의 전제가 논리적으로 모순되면 안 된다 (예: "X가 연출한 영화의 감독은
    누구인가?" 같은 자기모순, A의 사실과 B의 사실을 뒤섞은 잘못된 전제 금지).
 10. 자연스러운 2단 질문이 어려운 조합이면 {{"skip": true}}.
-
+{avoid}
 JSON: {{"question": "...", "gold_answer": "..."}}"""
     out = llm_json(SINGLE_SYS, user)
     q, g = out.get("question", ""), out.get("gold_answer", "")
@@ -365,6 +376,10 @@ class Materials:
         self.used_pairs = set()
         self.hop1_count = {}  # hop1 문서 재사용 상한 2회 (2차 검수 지시 7)
         self.entity_type_cache = {}  # hop2 유형 LLM 판정 캐시 {title: type}
+        # 동명이인/동명작품 배제: base title이 코퍼스에서 유일하지 않으면 comparison 부적합
+        self.ambiguous_base = {
+            bt for bt, n in Counter(base_title(c) for c in chunks).items() if n > 1
+        }
 
     def mark_used(self, row: dict):
         if row["combo"] == "single":
@@ -455,6 +470,10 @@ JSON: {{"type": "..."}}"""
                 if pair in self.used_pairs:
                     continue
                 a, b = self.chunks[ids[i]], self.chunks[ids[i + 1]]
+                # 동명이인·동명작품 배제 (검수 1차 104번 사유의 규칙화)
+                bta, btb = base_title(a["id"]), base_title(b["id"])
+                if bta == btb or bta in self.ambiguous_base or btb in self.ambiguous_base:
+                    continue
                 # 같은 개체 유형 + 비교 근거 값이 양쪽 서두에 실존하는 쌍만 채택
                 axis = comparable_axis(a, b)
                 if axis is None:

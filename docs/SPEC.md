@@ -131,9 +131,14 @@ make_initial_state(query): 전 필드 빈 값, current_hop_query=query, tried_qu
 ## 5. 평가 하네스 (eval/run_eval.py)
 
 - 옵션: --system {naive|baseline|improved} --subset {dev|150} --tag NAME [--http]
-- 튜닝은 독립 dev셋 48(eval/devset.jsonl, 조합별 16)에서만 수행 — 본 테스트셋과
-  동일 생성 파이프라인, 기존 DB 청크 한정, 기존 150과 질문 중복 금지.
-  기존 150(eval/testset.jsonl)은 확정 측정 전용(데이터 누수 방지).
+- 튜닝은 독립 dev셋 38(eval/devset.jsonl, single 16/bridge 6/comparison 16)에서만
+  수행 — 본 테스트셋과 동일 생성 파이프라인, 기존 DB 청크 한정, 기존 150과 질문
+  중복 금지. 기존 150(eval/testset.jsonl)은 확정 측정 전용(데이터 누수 방지).
+  bridge는 in-DB 후보 고갈로 6행(재사용 1 포함 — 질문·정답 상이 강제, provenance
+  기록) — k 튜닝에서 방향 참고용이며 주 신호는 single·comparison 32문항 + 전체 Hit.
+  best k 동률 규칙: bridge 차이 1~2건은 동률 취급, 동률이면 llm_calls 적은 쪽.
+- 시스템 간 비교표는 동일 top_k로 측정(v1 이후 k=10 통일).
+  day 1 naive@k5는 초기 기준선으로 보존.
 - 채점: final evidence의 hop별 chunk_ids vs hop_answers → 전체·조합별·hop별 Hit Rate, MRR
 - 부가: llm_call_count 평균, retry 발생률, exhausted 비율(reason별),
   Planner 분류 정확도(hop_type·answer_strategy vs 라벨)

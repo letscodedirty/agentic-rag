@@ -1,0 +1,1433 @@
+{
+  "config": {
+    "system": "baseline",
+    "subset": "dev",
+    "top_k": 10,
+    "http": false,
+    "tag": "dev_k10",
+    "llm_model": "gpt-4o-mini",
+    "embed_model": "text-embedding-3-small",
+    "gate_threshold": 0.7,
+    "timestamp": "2026-07-22T12:10:24",
+    "elapsed_sec": 290.1
+  },
+  "metrics": {
+    "overall": {
+      "n": 38,
+      "hit_rate": 0.9211,
+      "mrr": 0.9375
+    },
+    "single": {
+      "n": 16,
+      "hit_rate": 1.0,
+      "mrr": 1.0
+    },
+    "bridge": {
+      "n": 6,
+      "hit_rate": 0.5,
+      "mrr": 0.6667
+    },
+    "comparison": {
+      "n": 16,
+      "hit_rate": 1.0,
+      "mrr": 0.9766
+    },
+    "hop1": {
+      "n": 38,
+      "hit_rate": 1.0,
+      "mrr": 0.9737
+    },
+    "hop2": {
+      "n": 22,
+      "hit_rate": 0.8636,
+      "mrr": 0.8295
+    },
+    "llm_calls_avg": 5.0,
+    "retry_rate": 0.3158,
+    "exhausted_rate": 0.0789,
+    "exhausted_reasons": {
+      "retry": 3
+    },
+    "planner_accuracy": {
+      "n": 38,
+      "hop_type_acc": 0.8421,
+      "strategy_acc": 1.0
+    },
+    "top1_distance": {
+      "n": 38,
+      "min": 0.3228,
+      "p25": 0.4142,
+      "p50": 0.4534,
+      "p75": 0.5553,
+      "p90": 0.5861,
+      "p95": 0.6021,
+      "p99": 0.6572,
+      "max": 0.6572
+    }
+  },
+  "per_question": [
+    {
+      "question": "정호연은 어떤 경연 프로그램을 통해 이름을 알리기 시작했나요?",
+      "combo": "single",
+      "gold_answer": "《도전! 수퍼모델 코리아》",
+      "answer": "정호연은 《도전! 수퍼모델 KOREA 3》를 통해 이름을 알리기 시작했습니다. 이 프로그램은 그녀의 데뷔 무대였으며, 준우승에 올랐습니다. (출처: 김진경 (모델))",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 5,
+      "top1_distance": 0.6571536064147949,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "bridge",
+        "search_queries": [
+          "정호연 경연 프로그램",
+          "{hop1} 프로그램"
+        ],
+        "reason": "정호연이 출연한 경연 프로그램을 먼저 알아낸 뒤, 그 프로그램에 대한 정보를 찾아야 한다."
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 7.74
+    },
+    {
+      "question": "서울국제실험영화페스티벌은 언제 시작되었나요?",
+      "combo": "single",
+      "gold_answer": "2004년",
+      "answer": "서울국제실험영화페스티벌은 2004년에 시작되었습니다. 이 영화제는 처음에 국내영화제인 서울실험영화페스티벌(SEFF)로 시작하였고, 2005년부터는 국제영화제로 출범하였습니다. (출처: 서울국제실험영화페스티벌)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 5,
+      "top1_distance": 0.3872108459472656,
+      "plan": {
+        "query_type": "single_hop",
+        "hop_type": null,
+        "search_queries": [
+          "서울국제실험영화페스티벌 시작일"
+        ],
+        "reason": "서울국제실험영화페스티벌 문서 하나로 답할 수 있다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 1,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [
+        "서울국제실험영화페스티벌의 첫 번째 개최 연도는 언제인가요?"
+      ],
+      "elapsed_sec": 6.96
+    },
+    {
+      "question": "손톱에서 심혜진과 진희경 두 배우의 연기 하모니를 지켜본 감독은 누구인가?",
+      "combo": "single",
+      "gold_answer": "강제규 감독",
+      "answer": "손톱에서 심혜진과 진희경 두 배우의 연기 하모니를 지켜본 감독은 강제규입니다. 문서에서 강제규 감독이 여러 작품을 감독한 사실은 확인되지만, 손톱이라는 작품에 대한 정보는 제공되지 않아 구체적인 내용은 확인할 수 없습니다. (출처: 강제규)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 7,
+      "top1_distance": 0.3559767007827759,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "bridge",
+        "search_queries": [
+          "손톱 감독",
+          "{hop1} 연기 하모니"
+        ],
+        "reason": "감독 이름을 먼저 알아낸 뒤 그 인물 문서에서 연기 하모니에 대한 정보를 찾아야 한다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 1,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [
+        "손톱 영화에서 심혜진과 진희경의 연기를 감독한 강제규는 누구인가?"
+      ],
+      "elapsed_sec": 9.52
+    },
+    {
+      "question": "기술자들은 어떤 감독의 두번째 작품인가?",
+      "combo": "single",
+      "gold_answer": "김홍선",
+      "answer": "기술자들은 김홍선 감독의 두 번째 작품입니다. 문서에서 확인할 수 있는 정보는 김홍선 감독에 대한 내용이 없으므로, 이 감독의 두 번째 작품에 대한 구체적인 정보는 제공된 문서에서 확인할 수 없습니다. \n\n(출처: 문서 없음)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 9,
+      "top1_distance": 0.4389927387237549,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "bridge",
+        "search_queries": [
+          "기술자들 감독",
+          "{hop1} 두번째 작품"
+        ],
+        "reason": "감독 이름을 먼저 알아낸 뒤 그 인물의 두 번째 작품을 찾아야 한다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 2,
+      "exhausted": true,
+      "exhausted_reason": "retry",
+      "rewrite_history": [
+        "김홍선 감독의 두 번째 영화 제목은 무엇인가?",
+        "김홍선 감독의 두 번째 영화는 무엇인가?"
+      ],
+      "elapsed_sec": 12.76
+    },
+    {
+      "question": "전주국제영화제가 개최되는 도시는 어디인가요?",
+      "combo": "single",
+      "gold_answer": "전주시",
+      "answer": "전주국제영화제가 개최되는 도시는 전주시입니다. 전주국제영화제는 대한민국 전북특별자치도 전주시에서 개최되는 국제영화제로, 2000년 제1회 영화제를 시작으로 매년 열리고 있습니다. (출처: 전주국제영화제)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 3,
+      "top1_distance": 0.35333526134490967,
+      "plan": {
+        "query_type": "single_hop",
+        "hop_type": null,
+        "search_queries": [
+          "전주국제영화제 개최 도시"
+        ],
+        "reason": "전주국제영화제 문서 하나로 답할 수 있다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 5.83
+    },
+    {
+      "question": "김희수의 출생일은 언제인가?",
+      "combo": "single",
+      "gold_answer": "1999년 4월 17일",
+      "answer": "김희수의 출생일은 1999년 4월 17일입니다. 그는 대한민국의 배우로, 2002년부터 현재까지 활동하고 있습니다. (출처: 김희수 (배우))",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 3,
+      "top1_distance": 0.439772367477417,
+      "plan": {
+        "query_type": "single_hop",
+        "hop_type": null,
+        "search_queries": [
+          "김희수 출생일"
+        ],
+        "reason": "김희수 문서 하나로 답할 수 있다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 3.99
+    },
+    {
+      "question": "성은은 어떤 해에 가수로 데뷔하였나요?",
+      "combo": "single",
+      "gold_answer": "2005년",
+      "answer": "성은은 2005년에 가수로 데뷔하였습니다. 그녀는 《유혹》으로 가수 데뷔한 이후, 2015년에 댄스 트로트 가수로 전향하여 《해줘요》를 발표하였습니다. (출처: 성은)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 3,
+      "top1_distance": 0.41419321298599243,
+      "plan": {
+        "query_type": "single_hop",
+        "hop_type": null,
+        "search_queries": [
+          "성은 가수 데뷔 연도"
+        ],
+        "reason": "성은 문서 하나로 데뷔 연도를 확인할 수 있다."
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 4.24
+    },
+    {
+      "question": "추격자는 어떤 감독의 첫 장편영화인가?",
+      "combo": "single",
+      "gold_answer": "나홍진",
+      "answer": "《추격자》는 나홍진 감독의 첫 장편영화입니다. 이 영화는 나홍진 감독이 단편영화 두 편을 만든 후에 제작한 작품으로, 2008년에 개봉하였습니다. (출처: 추격자 (2008년 영화))",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 7,
+      "top1_distance": 0.45564937591552734,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "bridge",
+        "search_queries": [
+          "추격자 감독",
+          "{hop1} 첫 장편영화"
+        ],
+        "reason": "감독 이름을 먼저 알아낸 뒤 그 인물 문서에서 첫 장편영화를 찾아야 한다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 1,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [
+        "영화 '추격자'의 감독은 누구이며, 그의 첫 장편영화는 무엇인가?"
+      ],
+      "elapsed_sec": 11.29
+    },
+    {
+      "question": "철인사천왕의 감독은 누구인가?",
+      "combo": "single",
+      "gold_answer": "김현석",
+      "answer": "철인사천왕의 감독은 김현석입니다. 이 영화는 1998년에 제작된 애니메이션 영화로, 김현석 감독이 메가폰을 잡았습니다. 그러나 시나리오의 결함과 영상미의 부족 등으로 흥행에 실패했습니다. (출처: 철인사천왕)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 3,
+      "top1_distance": 0.5552476644515991,
+      "plan": {
+        "query_type": "single_hop",
+        "hop_type": null,
+        "search_queries": [
+          "철인사천왕 감독"
+        ],
+        "reason": "철인사천왕 문서 하나로 감독 정보를 알 수 있다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 4.3
+    },
+    {
+      "question": "배은식은 어떤 역할로 스타덤에 올랐나요?",
+      "combo": "single",
+      "gold_answer": "조선민주주의인민공화국의 지도자 김정일 역",
+      "answer": "배은식은 조선민주주의인민공화국의 지도자 김정일 역으로 스타덤에 올랐습니다. 그는 김정일 국방위원장을 빼닮은 용모로 2000년 서울에서 열린 남북정상 닮은꼴 이벤트에서 대상을 수상하며 주목받기 시작했습니다. (출처: 배은식)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 7,
+      "top1_distance": 0.5860754251480103,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "bridge",
+        "search_queries": [
+          "배은식 역할",
+          "{hop1} 스타덤에 오른 이유"
+        ],
+        "reason": "배은식의 역할을 먼저 알아낸 뒤 그 역할이 스타덤에 오른 이유를 찾아야 한다."
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 1,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [
+        "배은식이 어떤 작품에서 어떤 역할을 맡아 스타덤에 올랐는지 알려주세요."
+      ],
+      "elapsed_sec": 10.1
+    },
+    {
+      "question": "윤단비는 어떤 영화로 장편 데뷔를 했나요?",
+      "combo": "single",
+      "gold_answer": "《남매의 여름밤》",
+      "answer": "윤단비는 장편 데뷔작으로 《남매의 여름밤》을 발표했습니다. 이 영화는 부산국제영화제에서 4개 상을 수상하며 주목받았습니다. (출처: 윤단비)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 3,
+      "top1_distance": 0.3978884816169739,
+      "plan": {
+        "query_type": "single_hop",
+        "hop_type": null,
+        "search_queries": [
+          "윤단비 장편 데뷔 영화"
+        ],
+        "reason": "윤단비에 대한 정보가 담긴 문서 하나로 답할 수 있다."
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 4.18
+    },
+    {
+      "question": "함은정은 어떤 대회에서 우승하여 연예계 활동을 시작했나요?",
+      "combo": "single",
+      "gold_answer": "1995년 '리틀 미스 코리아' 대회에서 우승하고",
+      "answer": "함은정은 1995년 '리틀 미스 코리아' 대회에서 우승하여 연예계 활동을 시작했습니다. 같은 해 텔레비전 드라마 '신세대 보고 - 어른들은 몰라요'로 아역 배우로 데뷔하며 7세의 나이에 연예계에 진입했습니다. (출처: 함은정)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 5,
+      "top1_distance": 0.6315516233444214,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "bridge",
+        "search_queries": [
+          "함은정 대회 우승",
+          "{hop1} 연예계 활동 시작"
+        ],
+        "reason": "함은정이 우승한 대회를 먼저 알아낸 뒤 그 대회와 관련된 정보를 통해 연예계 활동 시작을 확인해야 한다."
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 7.48
+    },
+    {
+      "question": "문성근의 대표작 중 하나는 무엇인가?",
+      "combo": "single",
+      "gold_answer": "영화 《그들도 우리처럼》",
+      "answer": "문성근의 대표작 중 하나는 영화 《그들도 우리처럼》입니다. 문성근은 배우로서 여러 작품에 출연하였으며, 그 중 《그들도 우리처럼》이 그의 대표작 중 하나로 언급되고 있습니다. (출처: 문성근)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 3,
+      "top1_distance": 0.3228487968444824,
+      "plan": {
+        "query_type": "single_hop",
+        "hop_type": null,
+        "search_queries": [
+          "문성근 대표작"
+        ],
+        "reason": "문성근의 대표작에 대한 정보는 문서 하나로 답할 수 있다."
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 4.76
+    },
+    {
+      "question": "늑대소년의 감독은 누구인가요?",
+      "combo": "single",
+      "gold_answer": "조성희",
+      "answer": "늑대소년의 감독은 조성희입니다. 그는 영화의 감독과 각본을 맡았으며, 이 영화는 2012년 하반기에 개봉한 대한민국의 로맨스 영화입니다. (출처: 늑대소년 (영화))",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 3,
+      "top1_distance": 0.5552713871002197,
+      "plan": {
+        "query_type": "single_hop",
+        "hop_type": null,
+        "search_queries": [
+          "늑대소년 감독"
+        ],
+        "reason": "늑대소년 문서 하나로 답할 수 있다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 4.06
+    },
+    {
+      "question": "얼굴을 감독한 사람은 누구인가?",
+      "combo": "single",
+      "gold_answer": "신승수 감독",
+      "answer": "얼굴을 감독한 사람은 신승수입니다. 신승수 감독은 1999년에 개봉한 영화 《얼굴》을 연출하였으며, 이후 한동안 영화 연출 활동을 접었습니다. (출처: 얼굴 (1999년 영화))",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 5,
+      "top1_distance": 0.42571890354156494,
+      "plan": {
+        "query_type": "single_hop",
+        "hop_type": null,
+        "search_queries": [
+          "얼굴 감독"
+        ],
+        "reason": "얼굴 문서 하나로 감독 정보를 알 수 있다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 1,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [
+        "1999년 영화 '얼굴'의 감독은 누구인가?"
+      ],
+      "elapsed_sec": 7.24
+    },
+    {
+      "question": "황미선은 어떤 해에 태어났나요?",
+      "combo": "single",
+      "gold_answer": "1967년 9월 20일",
+      "answer": "황미선은 1967년 9월 20일에 태어났습니다. 그녀는 대한민국의 배우로, 1991년 SBS 1기 공채 탤런트 출신입니다. (출처: 황미선)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 3,
+      "top1_distance": 0.48139840364456177,
+      "plan": {
+        "query_type": "single_hop",
+        "hop_type": null,
+        "search_queries": [
+          "황미선 태어난 해"
+        ],
+        "reason": "황미선 문서 하나로 답할 수 있다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 3.62
+    },
+    {
+      "question": "복수 삼부작 중 2003년에 개봉한 영화의 주연 배우는 누구인가?",
+      "combo": "bridge",
+      "gold_answer": "최민식",
+      "answer": "2003년에 개봉한 영화의 주연 배우는 송강호, 신하균, 배두나입니다. 이들은 박찬욱 감독의 영화 《올드보이》에 출연하였으며, 이 영화는 복수 삼부작 중 하나로 알려져 있습니다. (출처: 복수 삼부작, 복수는 나의 것 (2002년 영화))",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 0.5
+          },
+          "2": {
+            "hit": false,
+            "rr": 0.0
+          }
+        },
+        "hit": false,
+        "mrr": 0.25
+      },
+      "llm_calls": 7,
+      "top1_distance": 0.5072494149208069,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "bridge",
+        "search_queries": [
+          "복수 삼부작 2003년 영화 주연 배우",
+          "{hop1} 주연 배우"
+        ],
+        "reason": "2003년에 개봉한 복수 삼부작 영화를 먼저 알아낸 뒤 그 영화의 주연 배우를 찾아야 한다."
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 1,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [
+        "2003년에 개봉한 복수 삼부작 영화의 주연 배우에 대한 자세한 정보를 제공해 주세요."
+      ],
+      "elapsed_sec": 9.94
+    },
+    {
+      "question": "1993년에 개봉한 '소녀 18세'의 감독은 어디에서 태어났나요?",
+      "combo": "bridge",
+      "gold_answer": "전라남도 광주",
+      "answer": "문서에서 '소녀 18세'의 감독인 남기남에 대한 출생지 정보는 확인할 수 없습니다. 따라서 남기남 감독이 어디에서 태어났는지는 문서에서 확인할 수 없습니다. \n\n(출처: 소녀 18세)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": false,
+            "rr": 0.0
+          }
+        },
+        "hit": false,
+        "mrr": 0.5
+      },
+      "llm_calls": 7,
+      "top1_distance": 0.3732292652130127,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "bridge",
+        "search_queries": [
+          "소녀 18세 감독",
+          "{hop1} 출신지"
+        ],
+        "reason": "감독 이름을 먼저 알아낸 뒤 그 인물 문서에서 출신지를 찾아야 한다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 2,
+      "exhausted": true,
+      "exhausted_reason": "retry",
+      "rewrite_history": [
+        "1993년 개봉 영화 '소녀 18세'의 감독 이름은 무엇인가요?",
+        "1993년 개봉 영화 '소녀 18세'의 감독은 누구이며, 그의 출생지는 어디인가요?"
+      ],
+      "elapsed_sec": 10.03
+    },
+    {
+      "question": "2018년에 개봉한 블랙 팬서의 주요 촬영이 이루어진 도시의 인구는 얼마인가?",
+      "combo": "bridge",
+      "gold_answer": "498,715명",
+      "answer": "2018년에 개봉한 블랙 팬서의 주요 촬영이 이루어진 도시 애틀랜타의 인구는 498,715명입니다. 애틀랜타는 미국 동남부 조지아주의 주도로, 2021년 미국 센서스국의 ACS 설문조사 결과 기준으로 이와 같은 인구 수치를 기록하고 있습니다. (출처: 애틀랜타)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 9,
+      "top1_distance": 0.5645836591720581,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "bridge",
+        "search_queries": [
+          "블랙 팬서 촬영 도시",
+          "{hop1} 인구"
+        ],
+        "reason": "촬영 도시를 먼저 알아낸 뒤 그 도시의 인구를 찾아야 한다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 2,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [
+        "부산의 인구는 얼마인가?",
+        "2018년 개봉 영화 블랙 팬서의 주요 촬영지인 조지아주 애틀랜타의 인구는 얼마인가?"
+      ],
+      "elapsed_sec": 17.28
+    },
+    {
+      "question": "김윤철이 연출한 2005년 방영 드라마의 최고 시청률은 얼마인가?",
+      "combo": "bridge",
+      "gold_answer": "51.1%",
+      "answer": "김윤철이 연출한 2005년 방영 드라마의 최고 시청률은 51.1%입니다. 이 드라마는 《내 이름은 김삼순》으로, 2005년 6월 1일부터 7월 21일까지 방영되었으며, 김삼순의 삶과 사랑을 그린 로맨틱 코미디입니다. (출처: 내 이름은 김삼순)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 5,
+      "top1_distance": 0.44805461168289185,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "bridge",
+        "search_queries": [
+          "김윤철 2005년 드라마",
+          "{hop1} 최고 시청률"
+        ],
+        "reason": "김윤철이 연출한 드라마를 먼저 찾아야 그 드라마의 최고 시청률을 알 수 있다."
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 6.82
+    },
+    {
+      "question": "단성사가 1919년에 상영한 최초의 한국 영화의 감독은 누구인가?",
+      "combo": "bridge",
+      "gold_answer": "김도산",
+      "answer": "문서에서 확인할 수 있는 내용으로는 단성사가 1919년에 상영한 최초의 한국 영화에 대한 정보가 없습니다. 따라서 해당 영화의 감독에 대한 정보도 확인할 수 없습니다. \n\n문서에서 확인할 수 없습니다. (출처: 없음)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": false,
+            "rr": 0.0
+          }
+        },
+        "hit": false,
+        "mrr": 0.5
+      },
+      "llm_calls": 9,
+      "top1_distance": 0.46141451597213745,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "bridge",
+        "search_queries": [
+          "단성사 1919년 상영 한국 영화",
+          "{hop1} 감독"
+        ],
+        "reason": "단성사가 상영한 영화의 제목을 먼저 알아낸 뒤, 그 영화의 감독을 찾아야 한다."
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 2,
+      "exhausted": true,
+      "exhausted_reason": "retry",
+      "rewrite_history": [
+        "1919년에 단성사에서 상영된 최초의 한국 영화 '의리적 구토'의 감독은 누구인가?",
+        "1919년에 단성사에서 상영된 한국 최초의 영화의 감독 이름은 무엇인가?"
+      ],
+      "elapsed_sec": 14.88
+    },
+    {
+      "question": "'사랑과 눈물'의 감독은 어떤 해에 태어났나요?",
+      "combo": "bridge",
+      "gold_answer": "1942년",
+      "answer": "'사랑과 눈물'의 감독은 남기남입니다. 남기남은 1942년 4월 17일에 태어났습니다. (출처: 남기남)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 0.5
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 0.75
+      },
+      "llm_calls": 5,
+      "top1_distance": 0.5581543445587158,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "bridge",
+        "search_queries": [
+          "사랑과 눈물 감독",
+          "{hop1} 출생 연도"
+        ],
+        "reason": "감독 이름을 먼저 알아낸 뒤 그 인물 문서에서 출생 연도를 찾아야 한다"
+      },
+      "answer_strategy": "정답형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 6.18
+    },
+    {
+      "question": "영화 '과속스캔들'과 '아이 캔 스피크' 중 어느 쪽이 먼저 개봉했나요?",
+      "combo": "comparison",
+      "gold_answer": "과속스캔들",
+      "answer": "- 과속스캔들: 2008년 12월 3일 개봉\n- 아이 캔 스피크: 2017년 개봉\n\n결론: 영화 '과속스캔들'이 '아이 캔 스피크'보다 먼저 개봉했습니다. (출처: 과속스캔들, 아이 캔 스피크)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.5760851502418518,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "과속스캔들 개봉일",
+          "아이 캔 스피크 개봉일"
+        ],
+        "reason": "두 영화의 개봉일을 나란히 비교해야 한다."
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 6.84
+    },
+    {
+      "question": "'도쿄!'와 '마더' 중 어느 영화가 먼저 개봉되었나요?",
+      "combo": "comparison",
+      "gold_answer": "도쿄!",
+      "answer": "- 도쿄!: 2008년 개봉\n- 마더: 2009년 5월 28일 개봉\n\n결론: '도쿄!'가 '마더'보다 먼저 개봉되었습니다. (출처: 도쿄!, 마더)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 0.25
+          }
+        },
+        "hit": true,
+        "mrr": 0.625
+      },
+      "llm_calls": 12,
+      "top1_distance": 0.5950073003768921,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "도쿄! 개봉일",
+          "마더 개봉일"
+        ],
+        "reason": "두 영화의 개봉 시점을 나란히 비교해야 한다"
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 4,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [
+        "마더 개봉일과 도쿄! 개봉일 비교",
+        "영화 '마더'와 '도쿄!'의 개봉일을 알려주세요.",
+        "영화 '도쿄!'와 '마더'의 개봉일을 비교하여 어느 영화가 먼저 개봉되었는지 알려주세요.",
+        "영화 '마더'의 정확한 개봉일을 알려주세요."
+      ],
+      "elapsed_sec": 18.78
+    },
+    {
+      "question": "신민아와 김수미 중 누가 더 먼저 태어났나요?",
+      "combo": "comparison",
+      "gold_answer": "김수미",
+      "answer": "- 신민아: 1984년 4월 5일 출생\n- 김수미: 1949년 10월 24일 출생\n\n김수미가 신민아보다 먼저 태어났습니다. (출처: 신민아, 김수미)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.3786274194717407,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "신민아 생년",
+          "김수미 생년"
+        ],
+        "reason": "두 배우의 생년을 나란히 비교해야 한다"
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 6.14
+    },
+    {
+      "question": "T.O.P와 엄지원 중 누가 더 먼저 태어났나요?",
+      "combo": "comparison",
+      "gold_answer": "엄지원",
+      "answer": "- T.O.P: 1987년 11월 4일\n- 엄지원: 1977년 12월 25일\n\nT.O.P가 엄지원보다 먼저 태어났습니다. (출처: T.O.P, 엄지원)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.4306012988090515,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "T.O.P 생년",
+          "엄지원 생년"
+        ],
+        "reason": "두 인물의 생년을 나란히 비교해야 한다"
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 6.01
+    },
+    {
+      "question": "권해효와 김대중 중 누가 먼저 태어났나요?",
+      "combo": "comparison",
+      "gold_answer": "김대중",
+      "answer": "- 권해효: 1965년 11월 6일\n- 김대중: 1924년 1월 6일\n\n김대중이 권해효보다 먼저 태어났습니다. (출처: 권해효, 김대중)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.4620742201805115,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "권해효 생년",
+          "김대중 생년"
+        ],
+        "reason": "두 인물의 생년을 나란히 비교해야 한다"
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 5.95
+    },
+    {
+      "question": "채시라와 허윤정 중 누가 먼저 데뷔했나요?",
+      "combo": "comparison",
+      "gold_answer": "동일 연도",
+      "answer": "- 채시라: 1983년 오리온 다이제스티브 CF의 모델로 데뷔\n- 허윤정: 1983년 MBC 문화방송 17기 공채 탤런트에 선발되어 정식 데뷔\n\n결론: 채시라와 허윤정은 같은 해에 데뷔했지만, 채시라가 CF 모델로 먼저 활동을 시작했습니다. (출처: 채시라, 허윤정)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.3533632755279541,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "채시라 데뷔일",
+          "허윤정 데뷔일"
+        ],
+        "reason": "두 인물의 데뷔 시점을 나란히 비교해야 한다"
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 7.89
+    },
+    {
+      "question": "황정음과 김정난 중 누가 먼저 데뷔했나요?",
+      "combo": "comparison",
+      "gold_answer": "김정난",
+      "answer": "- 황정음: 2002년 정규 앨범으로 데뷔\n- 김정난: 1991년 KBS 14기 공채 탤런트로 데뷔\n\n결론: 김정난이 황정음보다 먼저 데뷔했습니다. (출처: 황정음, 김정난)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.4530279040336609,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "황정음 데뷔일",
+          "김정난 데뷔일"
+        ],
+        "reason": "두 배우의 데뷔 시점을 나란히 비교해야 한다."
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 6.9
+    },
+    {
+      "question": "실미도와 맥주가 애인보다 좋은 일곱가지 이유 중 어느 영화가 먼저 개봉했나요?",
+      "combo": "comparison",
+      "gold_answer": "맥주가 애인보다 좋은 일곱가지 이유",
+      "answer": "- 실미도: 2003년 12월 24일 개봉\n- 맥주가 애인보다 좋은 일곱가지 이유: 1996년 개봉\n\n결론: \"맥주가 애인보다 좋은 일곱가지 이유\"가 \"실미도\"보다 먼저 개봉했습니다. (출처: 실미도, 맥주가 애인보다 좋은 일곱가지 이유)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.40830177068710327,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "실미도 개봉일",
+          "맥주가 애인보다 좋은 일곱가지 이유 개봉일"
+        ],
+        "reason": "두 영화의 개봉 시점을 나란히 비교해야 한다"
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 6.7
+    },
+    {
+      "question": "영화 '왕의 남자'와 '백야행: 하얀 어둠 속을 걷다' 중 어느 쪽이 먼저 개봉하였나요?",
+      "combo": "comparison",
+      "gold_answer": "왕의 남자",
+      "answer": "- 왕의 남자: 2005년 12월 29일 개봉\n- 백야행: 하얀 어둠 속을 걷다: 2009년 개봉\n\n결론: 영화 '왕의 남자'가 '백야행: 하얀 어둠 속을 걷다'보다 먼저 개봉하였습니다. (출처: 왕의 남자, 백야행: 하얀 어둠 속을 걷다)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.43776822090148926,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "왕의 남자 개봉일",
+          "백야행: 하얀 어둠 속을 걷다 개봉일"
+        ],
+        "reason": "두 영화의 개봉일을 나란히 비교해야 한다."
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 6.14
+    },
+    {
+      "question": "영웅과 극한직업 중 어느 영화가 먼저 개봉했나요?",
+      "combo": "comparison",
+      "gold_answer": "극한직업",
+      "answer": "- 영웅: 2022년 12월 21일 개봉\n- 극한직업: 2019년 2월 개봉\n\n결론: 《극한직업》이 《영웅》보다 먼저 개봉하였습니다. (출처: 영웅 (2022년 영화), 극한직업)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.5222623348236084,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "영웅 개봉일",
+          "극한직업 개봉일"
+        ],
+        "reason": "두 영화의 개봉 시점을 나란히 비교해야 한다."
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 5.71
+    },
+    {
+      "question": "영화 '벌새'와 '추격자' 중 어느 쪽이 먼저 개봉했나요?",
+      "combo": "comparison",
+      "gold_answer": "추격자",
+      "answer": "- 추격자: 2008년 개봉\n- 벌새: 2019년 8월 29일 개봉\n\n결론: 영화 '추격자'가 '벌새'보다 먼저 개봉했습니다. (출처: 추격자 (2008년 영화), 벌새 (영화))",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 6,
+      "top1_distance": 0.5212472677230835,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "벌새 개봉일",
+          "추격자 개봉일"
+        ],
+        "reason": "두 영화의 개봉 시점을 나란히 비교해야 한다."
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 1,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [
+        "영화 '벌새'와 '추격자'의 개봉일 비교"
+      ],
+      "elapsed_sec": 9.03
+    },
+    {
+      "question": "김의성과 유재명 중 누가 먼저 데뷔했나요?",
+      "combo": "comparison",
+      "gold_answer": "김의성",
+      "answer": "- 김의성: 1988년 영화 《성공시대》로 데뷔\n- 유재명: 1997년 연극 ‘서툰 사람들’로 데뷔\n\n김의성이 유재명보다 먼저 데뷔했습니다. (출처: 김의성, 유재명)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.4533843398094177,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "김의성 데뷔일",
+          "유재명 데뷔일"
+        ],
+        "reason": "두 배우의 데뷔 시점을 나란히 비교해야 한다"
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 5.55
+    },
+    {
+      "question": "'옥자'와 '우리들의 일그러진 영웅' 중 어느 영화가 먼저 개봉했나요?",
+      "combo": "comparison",
+      "gold_answer": "우리들의 일그러진 영웅",
+      "answer": "- 옥자: 2017년 6월 28일 개봉\n- 우리들의 일그러진 영웅: 1992년 8월 15일 개봉\n\n결론: '우리들의 일그러진 영웅'이 '옥자'보다 먼저 개봉했습니다. (출처: 옥자, 우리들의 일그러진 영웅 (영화))",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.6021397113800049,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "옥자 개봉일",
+          "우리들의 일그러진 영웅 개봉일"
+        ],
+        "reason": "두 영화의 개봉 시점을 나란히 비교해야 한다."
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 6.11
+    },
+    {
+      "question": "하희라와 강부자 중 누가 먼저 태어났나요?",
+      "combo": "comparison",
+      "gold_answer": "강부자",
+      "answer": "- 하희라: 1969년 12월 8일 태어남\n- 강부자: 1941년 2월 8일 태어남\n\n결론: 강부자가 하희라보다 먼저 태어났습니다. (출처: 하희라, 강부자)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.49257463216781616,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "하희라 생년",
+          "강부자 생년"
+        ],
+        "reason": "두 인물의 생년을 나란히 비교해야 한다"
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 5.97
+    },
+    {
+      "question": "영화 '도둑들'과 '타짜' 중 어느 영화가 먼저 개봉했나요?",
+      "combo": "comparison",
+      "gold_answer": "타짜",
+      "answer": "- 도둑들: 2012년 7월 25일 개봉\n- 타짜: 2006년 개봉\n\n결론: 영화 '타짜'가 '도둑들'보다 먼저 개봉했습니다. (출처: 도둑들, 타짜 (영화))",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.5840100049972534,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "도둑들 개봉일",
+          "타짜 개봉일"
+        ],
+        "reason": "두 영화의 개봉일을 나란히 비교해야 한다."
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 6.06
+    },
+    {
+      "question": "오영수와 송승환 중 누가 더 먼저 태어났나요?",
+      "combo": "comparison",
+      "gold_answer": "오영수",
+      "answer": "- 오영수: 1944년 10월 19일\n- 송승환: 1957년 1월 10일\n\n결론: 오영수가 송승환보다 먼저 태어났습니다. (출처: 오영수, 송승환)",
+      "score": {
+        "per_hop": {
+          "1": {
+            "hit": true,
+            "rr": 1.0
+          },
+          "2": {
+            "hit": true,
+            "rr": 1.0
+          }
+        },
+        "hit": true,
+        "mrr": 1.0
+      },
+      "llm_calls": 4,
+      "top1_distance": 0.42405617237091064,
+      "plan": {
+        "query_type": "multi_hop",
+        "hop_type": "comparison",
+        "search_queries": [
+          "오영수 생년",
+          "송승환 생년"
+        ],
+        "reason": "두 인물의 생년을 나란히 비교해야 한다"
+      },
+      "answer_strategy": "탐색형",
+      "retry_total": 0,
+      "exhausted": false,
+      "exhausted_reason": "",
+      "rewrite_history": [],
+      "elapsed_sec": 5.83
+    }
+  ]
+}

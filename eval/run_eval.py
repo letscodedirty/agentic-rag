@@ -36,20 +36,12 @@ COMBO_LABELS = {
 }
 
 
-def load_testset(subset: int) -> list:
-    path = ROOT / "eval" / "testset.jsonl"
+def load_testset(subset: str) -> list:
+    """"dev" → 독립 dev셋(튜닝 전용) / "150" → 확정 측정용 본 테스트셋 (SPEC §5)."""
+    name = "devset.jsonl" if subset == "dev" else "testset.jsonl"
+    path = ROOT / "eval" / name
     with open(path, encoding="utf-8") as f:
-        rows = [json.loads(l) for l in f if l.strip()]
-    if subset and subset < len(rows):
-        # 서브셋 48 = 조합별 16개 층화 추출 (고정 시드)
-        per_combo = subset // 3
-        rng = random.Random(42)
-        picked = []
-        for combo in ["single", "bridge", "comparison"]:
-            group = [r for r in rows if r["combo"] == combo]
-            picked += rng.sample(group, min(per_combo, len(group)))
-        rows = picked
-    return rows
+        return [json.loads(l) for l in f if l.strip()]
 
 
 def get_runner(system: str, top_k: int, use_http: bool):
@@ -168,7 +160,7 @@ def planner_accuracy(rows: list):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--system", required=True, choices=["naive", "baseline", "improved"])
-    ap.add_argument("--subset", type=int, default=150, choices=[48, 150])
+    ap.add_argument("--subset", default="150", choices=["dev", "150"])
     ap.add_argument("--tag", default=None)
     ap.add_argument("--top-k", type=int, default=5)
     ap.add_argument("--http", action="store_true")
