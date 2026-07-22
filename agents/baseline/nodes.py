@@ -41,14 +41,6 @@ PLANNER_USER_TMPL = """질문을 분석해 검색 계획을 세워라.
 판단 기준:
 1. query_type: 문서 1개의 내용만으로 답할 수 있으면 "single_hop",
    서로 다른 문서를 단계적으로(또는 나란히) 봐야 하면 "multi_hop".
-   주의: 질문이 대상(인물·작품·기관)을 '이름으로 직접 지목'하고 그 대상의
-   속성(출신 학교, 데뷔작, 개봉일, 수상 등)을 묻는 경우는 single_hop이다 —
-   답은 그 대상의 문서 하나에서 나온다. multi_hop(bridge)은 질문의 표현만으로는
-   대상 문서를 특정할 수 없어서 '1단계에서 대상의 이름부터 알아내야 하는'
-   경우에만 해당한다.
-   반대로, 대상이 이름으로 지목되어 있어도 질문이 실제로 묻는 주어가 그 대상
-   자체가 아니라 '이름이 나오지 않은 딸린 인물·작품'(예: "그 영화의 감독은
-   어디 출신인가?", "그곳이 상영한 영화의 감독은 누구인가?")이면 bridge다.
 2. hop_type: multi_hop 중 "1단계에서 알아낸 엔티티로 2단계 문서를 찾아야 하는"
    연쇄형이면 "bridge", "두 대상을 나란히 비교"하는 형태면 "comparison".
    single_hop이면 따옴표 없는 JSON null 리터럴로 출력하라.
@@ -75,21 +67,6 @@ PLANNER_USER_TMPL = """질문을 분석해 검색 계획을 세워라.
   {"query_type": "multi_hop", "hop_type": "comparison",
    "search_queries": ["박하사탕 개봉일", "우리학교 개봉일"],
    "answer_strategy": "탐색형", "reason": "두 작품의 개봉 시점을 나란히 비교한다"}
-- 질문 "배우 안성기는 어떤 학교를 졸업했는가?" →
-  {"query_type": "single_hop", "hop_type": null,
-   "search_queries": ["안성기 출신 학교"],
-   "answer_strategy": "정답형",
-   "reason": "인물이 이름으로 직접 지목되어 있어 안성기 문서 하나로 답할 수 있다"}
-- 질문 "영화 곡성을 연출한 감독은 어떤 작품으로 데뷔했는가?" →
-  {"query_type": "multi_hop", "hop_type": "bridge",
-   "search_queries": ["곡성 감독", "{hop1} 데뷔 작품"],
-   "answer_strategy": "정답형",
-   "reason": "감독이 이름으로 지목되지 않아 1단계에서 이름을 알아내야 한다"}
-- 질문 "영화 살인의 추억의 감독은 어느 대학을 나왔는가?" →
-  {"query_type": "multi_hop", "hop_type": "bridge",
-   "search_queries": ["살인의 추억 감독", "{hop1} 출신 대학"],
-   "answer_strategy": "정답형",
-   "reason": "영화는 지목됐지만 질문의 주어는 이름 미상의 감독이므로 이름부터 알아내야 한다"}
 
 JSON: {"query_type": "single_hop|multi_hop", "hop_type": "bridge|comparison|null",
 "search_queries": [...], "answer_strategy": "정답형|탐색형", "reason": "..."}"""
