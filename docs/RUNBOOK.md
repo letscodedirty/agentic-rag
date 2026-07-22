@@ -61,12 +61,19 @@ cosine DB 구축 완료 후에 수행하라."
    질문 입력 → 답변·expander 확인, 비교 탭에서 naive vs agentic 나란히 확인
 5. [Code] "동작 확인 완료. git commit."
 
-## Day 5 — 튜닝
-1. [Code] "PLAN.md Day 5 수행. 서브셋 48로 k∈{3,5,10}을 각각 평가하고 결과를 표로 정리해줘." (청크 모드 실험 미실시 상태면 포함)
-2. [나·낮] 표 보고 best 조합 결정 (기준: Hit Rate 우선, 동률이면 llm_calls 적은 쪽)
-3. [Code] "k=_, threshold=_로 확정. config에 고정하고 150 전체로 확정 측정 후
-   commit, git tag v1-baseline."
-4. [나] ★마일스톤 ②: `git push && git push --tags` (최적 하이퍼파라미터 버전 업로드)
+## Day 5 — 튜닝 (누수 방지 절차)
+1. [Code] "PLAN.md Day 5 수행. 먼저 독립 dev셋 48(조합별 16)을 기존 생성 규칙
+   전부 적용해 생성하라. 기존 DB 청크 한정, 기존 150과 질문 중복 금지.
+   검수 CSV를 출력하고 멈춰라."
+2. [나] 검수(48행, X 표시 → 재생성 반복) → 통과 시 "검수 통과. devset.jsonl 확정."
+3. [Code] "dev셋으로 baseline k=5 평가(기준점) → k=3, k=10 평가 → 3개 결과 표."
+4. [나] best k 결정(Hit 우선, 동률 시 llm_calls 적은 쪽) → [Code] "k=_ 확정.
+   150 전체로 개선 측정 1회 실행하고 결과 저장."
+5. [Code] "Planner 과분해 교정: 프롬프트에 넣을 창작 예시를 먼저 보여주고 승인
+   받아라(기존 150 질문 문구 금지). 승인 후 dev셋 재평가 — 분류 정확도와 반대
+   방향 오분류를 보고하라."
+6. [나] 개선 확인 → [Code] "150 확정 측정 → config 고정 → commit, git tag v1-baseline."
+7. [나] ★마일스톤 ②: `git push && git push --tags`
 
 ## Day 6 — 구조 수정 결정 + 착수
 1. [웹·아침] 새 채팅에 SPEC.md + Day5 결과 JSON 첨부:

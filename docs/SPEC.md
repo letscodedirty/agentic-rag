@@ -130,8 +130,10 @@ make_initial_state(query): 전 필드 빈 값, current_hop_query=query, tried_qu
 
 ## 5. 평가 하네스 (eval/run_eval.py)
 
-- 옵션: --system {naive|baseline|improved} --subset {48|150} --tag NAME [--http]
-- 서브셋 48 = 조합별 16개 층화 추출(튜닝용). 확정 측정은 150.
+- 옵션: --system {naive|baseline|improved} --subset {dev|150} --tag NAME [--http]
+- 튜닝은 독립 dev셋 48(eval/devset.jsonl, 조합별 16)에서만 수행 — 본 테스트셋과
+  동일 생성 파이프라인, 기존 DB 청크 한정, 기존 150과 질문 중복 금지.
+  기존 150(eval/testset.jsonl)은 확정 측정 전용(데이터 누수 방지).
 - 채점: final evidence의 hop별 chunk_ids vs hop_answers → 전체·조합별·hop별 Hit Rate, MRR
 - 부가: llm_call_count 평균, retry 발생률, exhausted 비율(reason별),
   Planner 분류 정확도(hop_type·answer_strategy vs 라벨)

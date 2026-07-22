@@ -26,9 +26,15 @@
 - frontend/app.py: 탭 2개 (단독 + 비교)
 - **완료 기준: 브라우저에서 같은 질문의 naive vs agentic 비교 화면 동작**
 
-## Day 5 — 하이퍼파라미터 튜닝
-- 서브셋 48로 회전: k∈{3,5,10} (청크 모드 미결 시 포함). GATE_THRESHOLD=0.70 고정(튜닝 비대상)
-- best 조합을 150 전체로 확정 측정 → config/baseline.yaml 고정
+## Day 5 — 하이퍼파라미터 튜닝 (누수 방지: 튜닝은 dev셋, 150은 확정 측정 전용)
+- 독립 dev셋 48 생성(조합별 16, 기존 파이프라인·기존 DB 청크 한정, 150과 질문 중복
+  금지) → 검수 → eval/devset.jsonl 확정
+- dev셋 회전: k=5(기준점) → k=3, k=10 → best k 결정(Hit 우선, 동률 시 llm_calls
+  적은 쪽) → 150으로 개선 측정 1회 기록
+- Planner 과분해 교정(예시는 새로 작성한 창작 문장만 — 기존 150의 실제 질문 문구
+  사용 금지) → dev셋 재확인(분류 정확도 + 반대 방향 오분류 감시) → 개선 시 채택
+- 150 확정 측정 → config/baseline.yaml 고정. GATE_THRESHOLD=0.70 고정(튜닝 비대상),
+  청크 모드 실험은 미실시(보존 아이디어 유지)
 - **완료 기준: best params 표 + `git tag v1-baseline`**
 
 ## Day 6~7 — 구조 수정 (agents/improved)
