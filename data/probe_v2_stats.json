@@ -1,0 +1,62 @@
+{
+  "actor_tree": {
+    "docs": 8904,
+    "depth": 3
+  },
+  "overlap": {
+    "actor_tree_docs": 8904,
+    "movie_tree_docs": 16149,
+    "union": 19639,
+    "intersection": 5414,
+    "actor_only": 3490,
+    "movie_only": 10735
+  },
+  "sample": {
+    "film": {
+      "n": 50,
+      "wikitext_len": {
+        "min": 1051,
+        "p25": 2047,
+        "p50": 3775,
+        "p75": 6134,
+        "p90": 12673,
+        "max": 23228,
+        "mean": 5344
+      },
+      "sections": {
+        "min": 2,
+        "p25": 4,
+        "p50": 5,
+        "p75": 9,
+        "p90": 14,
+        "max": 24,
+        "mean": 7
+      },
+      "plot_rate": 0.56,
+      "infobox_rate": 1.0
+    },
+    "actor": {
+      "n": 50,
+      "wikitext_len": {
+        "min": 534,
+        "p25": 1088,
+        "p50": 2365,
+        "p75": 5265,
+        "p90": 9982,
+        "max": 23313,
+        "mean": 4294
+      },
+      "sections": {
+        "min": 0,
+        "p25": 4,
+        "p50": 6,
+        "p75": 11,
+        "p90": 16,
+        "max": 27,
+        "mean": 8
+      },
+      "filmo_rate": 0.66,
+      "infobox_rate": 1.0
+    }
+  }
+}
