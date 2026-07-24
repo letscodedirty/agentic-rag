@@ -8,7 +8,7 @@ GitHub 규칙 (원격: https://github.com/letscodedirty/agentic-rag):
 - 마일스톤 push 3회는 필수 — [나]가 직접 수행:
   ① Day 3 완료(baseline 코드+평가 통과) → `git push`
   ② Day 5 완료(최적 하이퍼파라미터 확정, tag v1-baseline) → `git push && git push --tags`
-  ③ Day 8 완료(improved 확정 측정, tag v2-improved) → `git push && git push --tags`
+  ③ Day 8 완료(v2 확정 측정, tag v2-arch) → `git push && git push --tags`
 - 그 외 Day의 commit 후 push는 선택(백업 겸 권장).
 - push 전 `git status`에 .env가 절대 보이면 안 됨(보이면 중단 후 .gitignore 확인).
 
@@ -75,39 +75,29 @@ cosine DB 구축 완료 후에 수행하라."
 6. [나] 개선 확인 → [Code] "150 확정 측정 → config 고정 → commit, git tag v1-baseline."
 7. [나] ★마일스톤 ②: `git push && git push --tags`
 
-## Day 6 — 구조 수정 결정 + 착수
-1. [웹·아침] 새 채팅에 SPEC.md + Day5 결과 JSON 첨부:
-   "확정 설계서와 baseline 평가 결과다. 약점을 분석하고 improved 수정안을 논의하자.
-   "1순위 후보 re-ranking, 2순위 본문 청크 추가(중복 최소화, 채점 라벨 확장 과제
-포함), 3순위 청크별 판정/k분리/중간답 하이브리드/모델 차등화. 내가 강하게
-추천하는 아이디어가 있으면 우선순위를 높여 논의하라."
-2. [나] 논의 후 수정안 확정 → 그 채팅에서 "SPEC.md에 추가할 §8(improved 설계) 문구를 써줘"
-3. [나] SPEC.md에 §8 붙여넣기 → git commit
-4. [Code] "SPEC.md에 §8이 추가됐다. PLAN.md Day 6~7 수행. agents/improved에 구현,
-   baseline은 건드리지 마. 새 LLM 프롬프트는 승인 방식."
+## Day 6 — v2 데이터 구축
+1. [Code] "PLAN.md Day 6 수행. SPEC §8·docs/V2_DESIGN.md 준수. 기존 코드·./db
+   무변경. 수집은 백그라운드, 파싱 완료 후 3층 통계와 무작위 20문서 샘플 보고."
+2. [나] 통계·샘플 검수(파트너와) → [Code] "검수 통과. commit." → 선택 push
 
-## Day 7 — 구조 수정 완성
-1. [Code] "improved 완성 후 150 전체 평가. baseline과 비교표 보여줘.
-   (re-ranking이면 MRR 변화 중심으로.) 완료 기준 확인 후 commit."
-2. [Code] "backend에 /ask_improved 추가(응답 계약 /ask와 동일). frontend:
-   단독 탭에 시스템 선택기(baseline|improved, 기본값 improved) 추가, 비교 탭을
-   naive|baseline|improved 3열로 확장. 브라우저에서 단독 탭 improved 동작 +
-   같은 질문 3-way 동작 확인."
-3. [나] 비교표 확인 — 개선이 없으면 → [웹] Day 6 채팅 이어서 원인 분석·조정 논의
+## Day 7 — agents/v2 + 통합
+1. [Code] "PLAN.md Day 7 수행. docs/V2_AGENT.md가 구현 명세다. agents/v2 신설,
+   프롬프트는 전문 승인 대기."
+2. [나] 프롬프트 검토(파트너와) → 승인 → 통합 검증
+3. [나] 명료화 상세를 파트너와 확정 → SPEC §8 갱신 → [Code] 구현 지시
+4. [Code] "/ask_v2 + 3-way UI. 브라우저 검증: 6유형." → [나] 검증·스크린샷
 
-## Day 8 — 최종 측정
-1. [Code] "improved 세부 튜닝(서브셋) → 최적값으로 150 확정 측정 →
-   naive/baseline/improved × 조합별 Hit Rate·MRR 최종 비교표 생성.
-   PLAN.md Day 8의 요구사항 체크리스트도 점검해줘."
-2. [나] 표·체크리스트 확인 → [Code] "commit, git tag v2-improved."
-3. [나] ★마일스톤 ③: `git push && git push --tags` (improved 최종 버전 업로드)
-4. [나] 데모 화면 스크린샷 몇 장 찍어두기 (Day 11 PPT 재료)
+## Day 8 — v2 테스트셋 + 평가
+1. [Code] "v2 테스트셋 생성(라벨=청크 집합) + 애매 질문 소셋. 검수 CSV 후 대기."
+2. [나] 검수(파트너와) → 통과 → [Code] "3시스템 평가 + 명료화 2지표. 완료 기준
+   확인 후 commit, git tag v2-arch."
+3. [나] ★마일스톤 ③: `git push && git push --tags`
 
-## Day 9~10 — 버퍼
-- 지연분 소화. 남으면 [Code]에 하나씩: "넛지형 시연 질문 5개 추가" /
-  "화면에 개선 기능 ON/OFF 토글" / "스트리밍" 등 (전부 선택)
-- 전부 여유면 [나] 데모 시나리오 대본 작성: 어떤 질문을 어떤 순서로 시연할지
-  (실패→개선이 극적인 질문을 평가 결과에서 골라두기)
+## Day 9 — 마무리·완충
+1. [나] 결과 판독(파트너와) + 데모 대본 / 2. [Code] 잔여 다듬기 → commit
+
+## Day 10 - 버퍼
+1. 발표준비
 
 ## Day 11 — 발표
 1. [웹] 새 채팅에 SPEC.md + 최종 비교표 JSON + 스크린샷 첨부:
