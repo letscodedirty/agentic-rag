@@ -1,0 +1,50 @@
+{
+  "docs": 19639,
+  "doc_type_dist": {
+    "movie": 8955,
+    "other": 1198,
+    "person": 9486
+  },
+  "chunks": {
+    "n": 56546,
+    "len": {
+      "min": 3,
+      "p25": 119,
+      "p50": 256,
+      "p75": 704,
+      "p90": 1130,
+      "max": 1366,
+      "mean": 431
+    },
+    "per_doc_mean": 2.88
+  },
+  "stub_docs": {
+    "intro_lt200_collect": 18254,
+    "cleaned_intro_lt100": 11795
+  },
+  "chunk_processing": {
+    "merged_small_sections": 20437,
+    "dropped_small_sections": 15,
+    "split_long_sections": 4550,
+    "synthetic_intros": 10731,
+    "fallback_title_only": 2,
+    "docs_with_chunks": 19639
+  },
+  "infobox": {
+    "present": 18576,
+    "parsed_ok": 18576,
+    "present_rate": 0.946,
+    "parse_success_rate": 1.0,
+    "mean_fields": 9.3
+  },
+  "filmography": {
+    "persons": 13490,
+    "entries": 311854,
+    "reverse_entries": 12851,
+    "reverse_ratio": 0.041,
+    "persons_covered_only_by_reverse": 5170
+  },
+  "category_index": {
+    "categories": 11820
+  }
+}

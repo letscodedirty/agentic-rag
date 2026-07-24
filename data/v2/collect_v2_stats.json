@@ -1,0 +1,14 @@
+{
+  "union_docs": 19642,
+  "snapshot_docs": 19639,
+  "snapshot_fail": 0,
+  "skip_redirect_dup": 2,
+  "skip_disambig": 1,
+  "intro_lt200": 18257,
+  "intro_lt100": 15975,
+  "tree_dist": {
+    "movie": 10737,
+    "actor": 3490,
+    "both": 5415
+  }
+}
