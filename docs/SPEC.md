@@ -168,7 +168,40 @@ make_initial_state(query): 전 필드 빈 값, current_hop_query=query, tried_qu
 LLM: gpt-4o-mini(전 노드 동일) / 임베딩: text-embedding-3-small / distance: cosine /
 한 리포 + agents/{naive, baseline, improved} + 공유 core/ + git tag 박제 /
 temperature=0 / k 초기 5 / 판정 유효 3칸 / 파싱 재실패=sufficient 통과 /
-추출 재실패=exhausted("extract") / day 6~7 improved 우선순위: 1순위 re-ranking / 2순위 본문 청크 추가(id=title::문단,
-내용 중복 최소화 전제, 채점 공정성 위한 라벨 확장 또는 전 시스템 재측정 필요) /
-3순위 청크별 판정·k분리·중간답 하이브리드·모델 차등화.
-단, day 6 논의에서 사용자가 강하게 추천하는 아이디어는 우선순위 상향 가능.
+추출 재실패=exhausted("extract") / day 6~9는 v2 트랙으로 확정(사용자 결정, 기존 improved 우선순위 대체):
+v2 데이터 구축 → agents/v2 신설 → 명료화 → v2 테스트셋 → 3시스템 비교.
+re-ranking·본문 청크 등 기존 후보는 v2 설계에 흡수 또는 보존 아이디어 유지.
+
+## 8. v2 트랙 (상세: docs/V2_DESIGN.md=데이터, docs/V2_AGENT.md=에이전트)
+
+- 데이터: 영화+배우 분류 트리 합집합 19,639 문서 전문 → 3층 저장.
+  ① 섹션 청크(id=title::섹션, 긴 섹션 문단 분할·잔섹션 병합. 문서 제외 없이
+  전 문서 수록 — 청크 하한 100자는 청크 생성 기준으로만 적용, 100자 미만
+  서두는 인포박스 핵심 필드 합성 서두로 수록, 메타데이터 {title, doc_type,
+  section, categories}) ② 인포박스 정형 레코드
+  ③ 필모그래피·분류 색인(배우 섹션 + 영화 인포박스 출연진 역인덱스, 출처 기록).
+  ./db_v2 별도(./db 무변경), 원문 스냅샷 git 추적.
+- agents/v2 (baseline·naive 동결, core는 추가만): 확정 결정 6건 —
+  (1) query_type에 list 신설(여러 항목 요구 유형): Judge 없이 색인 조회→Generator
+  직행, 조회 빈손이면 exhausted_reason="list_miss".
+  (2) 개체명 인식 = Planner의 plan.entities 1차 + 전 문서 제목 사전 매칭 보정.
+  (3) Judge 입력 = 1층 청크 전문 전량 + structured_results (발췌 금지). LLM은
+  gpt-4o-mini 유지.
+  (4) hop전환 추출 2단 폴백: 질의↔인포박스 필드 매칭 시 값 직접 채용(LLM 0회)
+  → 실패 시 병합 묶음에서 LLM 추출. 최종 답변 문장화는 항상 Generator.
+  (5) Generator 3×2 = (정답형/탐색형/목록형)×(정상/exhausted), 정상 칸은 구성
+  지시형(핵심 답→근거 상세→인포박스 부가→출처), exhausted 칸은 앞 hop 문서
+  fetch_chunks 재조회 포함 + 확인분 상세 + 한계 명시. 문서 밖 서술 금지 유지.
+  (6) k=10, GATE_THRESHOLD=0.70 이월(추후 튜닝 시 갱신). 문지기 이원화:
+  1층 거리 기준 hop 생사 판정하되 2·3층 적중 시 hop 유지 + 미달 1층 청크는
+  병합 제외, 양층 빈손일 때만 즉시 실패.
+- state 추가 필드(추가만): plan.entities, structured_results, list_results,
+  clarification. evidence에는 2·3층 적중분도 원본 청크 id로 환산해 박제.
+- 명료화(구현은 agents/v2 완성 후 상세 확정): 무상태 2회 실행 — Planner 앞
+  노드가 애매성 사유 분류(보수적 발동), DB 실존 문서 접지 예시 생성,
+  clarification 기록 후 조기 종료. 재입력은 새 실행.
+- core 공유 규칙: core/state.py·db.py 등은 새 함수·새 필드 추가만 허용,
+  기존 함수·필드의 동작·의미 변경 금지. v2 전용 로직·프롬프트는 agents/v2에.
+- 평가: v2 테스트셋(기존 3유형+list 등 확장, 라벨=정답 청크 집합 — 하나라도
+  적중이면 hit). 3시스템 전부 v2 1층을 검색하도록 DB 경로 config 주입(코드
+  동결 유지). v1 결과(v1-baseline)는 서두 코퍼스 기준 기록으로 보존.
