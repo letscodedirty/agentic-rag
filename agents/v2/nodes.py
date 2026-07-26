@@ -215,11 +215,27 @@ def list_lookup_node(state: AgentStateV2) -> dict:
     return {"exhausted": True, "exhausted_reason": "list_miss", "list_results": {}}
 
 
-def _serialize_structured(structured: dict) -> str:
-    """정형 조회 결과 → 프롬프트 직렬화 (Judge·hop전환·Generator 공용)."""
+# Generator용 [정형 정보]에서 제외하는 비정보 필드 (승인 방침 2 — Judge용은
+# 전 필드 유지). 근거: v2 인포박스 실측 필드 중 답변 본문에 무의미한
+# 시각(그림·사진·포스터·로고)·표기 메타(name 등 중복 키) 필드.
+NON_INFO_FIELDS = frozenset({
+    "그림", "그림설명", "그림 설명", "그림크기", "그림 크기",
+    "사진", "사진설명", "사진 설명", "사진크기", "사진 크기",
+    "포스터", "로고", "이미지", "임베드", "name",
+})
+
+
+def _serialize_structured(structured: dict, exclude_fields: frozenset = None) -> str:
+    """정형 조회 결과 → 프롬프트 직렬화.
+
+    Judge·hop전환은 전 필드(exclude_fields=None), Generator는
+    NON_INFO_FIELDS 제외 — 두 용도 분리 (승인 방침 2)."""
     lines = []
     for rec in (structured or {}).get("infobox", []):
-        fields = " | ".join(f"{k}: {v}" for k, v in rec.get("fields", {}).items())
+        items = rec.get("fields", {}).items()
+        if exclude_fields:
+            items = [(k, v) for k, v in items if k not in exclude_fields]
+        fields = " | ".join(f"{k}: {v}" for k, v in items)
         lines.append(f"인포박스 [{rec['title']}] ({rec['doc_type']}): {fields}")
     for fl in (structured or {}).get("filmography", []):
         works = ", ".join(e["작품"] + (f"({e['연도']})" if e.get("연도") else "")
@@ -476,17 +492,24 @@ def hop_transition_node(state: AgentStateV2) -> dict:
             .replace("<<HOP_QUERY>>", state["current_hop_query"])
             .replace("<<DOCS>>", docs or "(없음)"))
     counter = {"llm_call_count": state["llm_call_count"]}
-    answer = ""
-    for _ in range(2):
+    answer, over_limit = "", False
+    for attempt in range(2):
+        user_txt = user
+        if attempt and over_limit:  # 30자 초과 재요청 — 재강조 (승인 방침 1)
+            user_txt = (user + "\n\n주의: 직전 답이 30자를 초과했다. 대상의 "
+                               "이름/값 하나만 30자 이내 짧은 구로 답하라.")
         raw = call_llm(
             counter,
             [{"role": "system", "content": EXTRACT_SYSTEM},
-             {"role": "user", "content": user}],
+             {"role": "user", "content": user_txt}],
             json_mode=True,
         )
         try:
             answer = (json.loads(raw).get("answer") or "").strip()
         except (json.JSONDecodeError, TypeError, AttributeError):
+            answer = ""
+        if len(answer) > MAX_FIELD_VALUE:  # 초과=부적합(빈 답 동일) — 절단 금지
+            over_limit = True
             answer = ""
         if answer:
             break
@@ -640,9 +663,10 @@ GEN_INSTR = {
         "있으면 각 항목에 관련 부가 정보를 짧게 덧붙여라."),
     ("목록형", False): (
         "[목록 조회 결과]의 항목을 빠짐없이 나열하라('- 항목' 형식). 각 항목에 조회 "
-        "결과나 [정형 정보]에서 확인되는 연도·장르 등을 괄호로 덧붙여라. 첫 문장에 "
-        "총 항목 수를 밝히고, 연도가 있는 항목은 연도순으로 정렬하라. 항목이 50개를 "
-        "초과하면 연도순 50개만 나열하고 마지막에 '외 N편(총 M편)'으로 요약하라."),
+        "결과나 [정형 정보]에서 확인되는 연도·장르 등을 괄호로 덧붙여라. 연도가 "
+        "확인되지 않는 항목은 괄호 표기를 생략하라. 첫 문장에 총 항목 수를 밝히고, "
+        "연도가 있는 항목은 연도순으로 정렬하라. 항목이 50개를 초과하면 연도순 "
+        "50개만 나열하고 마지막에 '외 N편(총 M편)'으로 요약하라."),
     ("정답형", True): (
         "검색이 충분한 근거를 찾지 못한 채 종료됐다. 확정적인 답을 단정하지 마라. "
         "문서에서 확인되는 부분까지만 정리하고, 무엇을 확인할 수 없었는지 명시하라. "
@@ -700,7 +724,8 @@ def generator_node(state: AgentStateV2) -> dict:
     inter = (f"\n[1단계에서 확인한 중간 답] {', '.join(state['intermediate_answers'])}"
              if state["intermediate_answers"] else "")
     docs = "\n\n".join(f"[{r['title']}]\n{r['text']}" for r in docs_list) or "(문서 없음)"
-    structured_txt = _serialize_structured(state.get("structured_results") or {})
+    structured_txt = _serialize_structured(state.get("structured_results") or {},
+                                           exclude_fields=NON_INFO_FIELDS)
     list_block = (f"[목록 조회 결과]\n{_serialize_list(state.get('list_results') or {})}\n\n"
                   if strategy == "목록형" else "")
     user = (f"[질문] {state['query']}{inter}\n\n[문서]\n{docs}\n\n"
