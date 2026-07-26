@@ -39,6 +39,22 @@ class AgentState(TypedDict):
     answer: str
 
 
+class AgentStateV2(AgentState):
+    """v2 확장 상태 (SPEC §8, 추가만 — 기존 필드 무변경).
+
+    plan.entities는 plan dict 내부 키라 스키마 변경 없음.
+    """
+    structured_results: dict  # {"infobox": [record], "filmography": [{person, keys, entries}]}
+    list_results: dict        # {"kind": "filmography"|"category", "key": str, "items": [...]}
+    clarification: dict       # 명료화 노드 기록 (agents/v2 완성 후 상세 확정 — 자리만)
+
+
+def make_initial_state_v2(query: str) -> "AgentStateV2":
+    """v1 초기 상태 재사용 + v2 필드 빈 값 (기존 함수 무변경)."""
+    s = make_initial_state(query)
+    return AgentStateV2(**s, structured_results={}, list_results={}, clarification={})
+
+
 def make_initial_state(query: str) -> AgentState:
     """전 필드 빈 값, current_hop_query=query, tried_queries=[query]."""
     return AgentState(

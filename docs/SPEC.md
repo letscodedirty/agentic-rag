@@ -192,7 +192,10 @@ re-ranking·본문 청크 등 기존 후보는 v2 설계에 흡수 또는 보존
   (5) Generator 3×2 = (정답형/탐색형/목록형)×(정상/exhausted), 정상 칸은 구성
   지시형(핵심 답→근거 상세→인포박스 부가→출처), exhausted 칸은 앞 hop 문서
   fetch_chunks 재조회 포함 + 확인분 상세 + 한계 명시. 문서 밖 서술 금지 유지.
-  (6) k=10, GATE_THRESHOLD=0.70 이월(추후 튜닝 시 갱신). 문지기 이원화:
+  (6) k=10, GATE_THRESHOLD=0.70 이월(추후 튜닝 시 갱신). 1층 검색은 이중
+  갈래 — 전역 top-k와 plan.entities 기반 title 메타데이터 필터 top-k를
+  병합한다(중복 제거, 갈래 출처 구분 유지). 문지기의 top1_distance는
+  병합 후 1등 거리 기준. 문지기 이원화:
   1층 거리 기준 hop 생사 판정하되 2·3층 적중 시 hop 유지 + 미달 1층 청크는
   병합 제외, 양층 빈손일 때만 즉시 실패.
 - state 추가 필드(추가만): plan.entities, structured_results, list_results,

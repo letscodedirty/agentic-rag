@@ -189,6 +189,35 @@ def search_v2(query: str, k: int = 5):
     return results, top1
 
 
+def search_v2_filtered(query: str, titles: list, k: int = 5):
+    """v2 1층 title 메타데이터 필터 검색 (SPEC §8: 이중 갈래의 두 번째 갈래).
+
+    반환 형태는 search_v2()와 동일. titles가 비면 빈 결과.
+    """
+    if not titles:
+        return [], float("inf")
+    coll = get_v2_collection()
+    emb = embed_texts([query])[0]
+    where = ({"title": titles[0]} if len(titles) == 1
+             else {"title": {"$in": titles}})
+    res = coll.query(
+        query_embeddings=[emb],
+        n_results=k,
+        where=where,
+        include=["documents", "metadatas", "distances"],
+    )
+    results = []
+    for id_, doc, meta, dist in zip(
+        res["ids"][0], res["documents"][0], res["metadatas"][0], res["distances"][0]
+    ):
+        results.append(
+            {"id": id_, "title": meta["title"], "text": doc, "distance": dist,
+             "doc_type": meta.get("doc_type"), "section": meta.get("section")}
+        )
+    top1 = results[0]["distance"] if results else float("inf")
+    return results, top1
+
+
 def get_v2_by_ids(ids: list) -> list:
     """v2 chunk id 목록 → [{id, title, text}]."""
     coll = get_v2_collection()
