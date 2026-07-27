@@ -20,9 +20,10 @@ from core.state import AgentStateV2  # noqa: E402
 NODE_NAMES = ["planner", "list_lookup", "search", "judge",
               "hop_transition", "rewriter", "generator"]
 
-# 명료화 훅 예약 (V2_AGENT.md — 상세는 agents/v2 완성 후 확정):
-# callable(question:str) -> dict|None. dict 반환 시 그래프 진입 없이 그 결과로
-# 조기 종료(clarification 응답). None이면 통과. 기본은 미장착.
+# 명료화 훅 (SPEC §8 확정 — agents/v2/clarify.py 구현):
+# callable(question:str) -> None(통과) | {"proceed_query": q}(해석 확정 통과) |
+# {"clarification": {...}}(조기 종료). 기본은 clarify.clarify_question이며,
+# 이 변수로 대체 훅을 장착할 수 있다. run_agent(clarify=...)로 on/off.
 clarification_hook = None
 
 
@@ -76,18 +77,44 @@ def build_graph(nodes: dict):
 _graph_cache = {}
 
 
-def run_agent(question: str, top_k: int = None) -> dict:
+def _empty_contract(question: str) -> dict:
+    """명료화 조기 종료용 — 계약 키 빈 값 (승인 G, 상위집합 유지)."""
+    return {
+        "answer": "", "evidence": [], "sources": [], "plan": {}, "strategy": "",
+        "judge_history": [], "intermediate_answers": [], "rewrite_history": [],
+        "retry_total": 0, "hop_reached": 0, "exhausted": False,
+        "exhausted_reason": "", "llm_calls": 0, "top1_distance": None,
+        "structured_hits": {"infobox": [], "filmography": []},
+        "list_summary": None, "clarification": None,
+    }
+
+
+def run_agent(question: str, top_k: int = None, clarify: bool = False,
+              tau: float = None) -> dict:
     """하네스·백엔드 진입점 — 계약(질문 in → evidence 포함 out)은 baseline과 동일,
-    v2 추가 정보(structured/list 요약, clarification)를 상위집합으로 포함."""
+    v2 추가 정보(structured/list 요약, clarification)를 상위집합으로 포함.
+
+    clarify=True면 그래프 진입 전 명료화 훅 실행 (τ 확정 전 기본 OFF — 승인 H).
+    """
     import time
 
     from agents.v2.nodes import make_nodes
     from core.state import make_initial_state_v2
 
-    if clarification_hook is not None:  # 그래프 진입 전 명료화 훅 (자리 예약)
-        early = clarification_hook(question)
-        if early is not None:
-            return early
+    if clarify:
+        from agents.v2 import clarify as _clarify
+        t0 = time.time()
+        hook = clarification_hook or (lambda q: _clarify.clarify_question(q, tau=tau))
+        res = hook(question)
+        if res is not None:
+            if "proceed_query" in res:  # 재질문 취소 — 확정 해석으로 계속
+                question = res["proceed_query"]
+            else:  # 재질문 조기 종료
+                out = _empty_contract(question)
+                out["clarification"] = res["clarification"]
+                out["clarify_calls"] = res.get("clarify_calls", 0)
+                out["elapsed_sec"] = round(time.time() - t0, 2)
+                return out
 
     k = top_k if top_k is not None else default_top_k()
     if k not in _graph_cache:
