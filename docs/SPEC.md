@@ -153,15 +153,22 @@ make_initial_state(query): 전 필드 빈 값, current_hop_query=query, tried_qu
   intermediate_answers, retry_total, hop_reached, exhausted(+reason), llm_calls,
   sources[{hop, titles}], elapsed_sec
 - /ask_naive 응답: answer, sources, llm_calls, elapsed_sec
-- Streamlit 탭 2개: ① Agentic 단독(시스템 선택기: baseline|improved — day 7 전에는
-  baseline만, day 7 후 기본값 improved. 입력+top_k 슬라이더 → 선택 시스템의
-  답변+전략 뱃지+출처, expander: 계획/hop별 판정 표/재작성 이력/중간 답/통계
-  + improved 고유 정보 패널 추가 가능, exhausted 경고 박스)
-  ② 비교(같은 질문 → naive|agentic 좌우). 공통: /health 사전 확인, session_state 유지.
-  day 7 v2 완성 후: POST /ask_v2 추가(응답 계약 /ask의 상위집합 — clarification·
-  list 필드 추가, 기존 계약 무변경), 단독 탭 선택기(baseline|v2, 기본 v2),
-  비교 탭을 naive|baseline|v2 3열로 확장(입력·실행은 단일). 명료화 응답 시
-  화면은 답변 대신 예시 버튼들을 렌더링(클릭=입력창 채움→재제출).
+- POST /ask_v2 (day 7 5단계): agents/v2 위임, {question, top_k, clarify=True(기본
+  ON)}. 응답은 /ask 계약의 상위집합 — +clarification(u·tau·reason·db_matches·
+  category·choices·free_input_hint)·list_summary·structured_hits·clarify_calls.
+  기존 /ask·/ask_naive 계약 무변경.
+- Streamlit 단독 탭 3개 (day 7 5단계 확정 — 비교 탭·시스템 선택기 없음,
+  기본 탭 v2):
+  ① v2 — 기존 Agentic 구성(입력+top_k, 답변+전략 뱃지+출처, expander:
+  계획/판정 표/재작성/중간 답·통계, exhausted 경고) + 명료화 판정 expander
+  (u·τ·사유·DB 매칭·clarify_calls) + 정형 조회 요약(2·3층 적중·목록 조회) +
+  되묻기 카드(category 헤더 + choices 버튼: 클릭=question이 입력창에 채워짐
+  →재제출, free_input_hint 동반)
+  ② baseline — 기존 단독 탭 구성 그대로 ③ naive — 입력+답변+출처만.
+  각 탭 상단에 검색 코퍼스 표기(naive·baseline=서두 DB, v2=전문 3층 DB).
+  출처 title은 https://ko.wikipedia.org/wiki/{title} 기계 조립 링크
+  (LLM 생성 금지, 3탭 공통 — v2 청크 id는 :: 앞 문서 제목 사용).
+  공통: /health 사전 확인, session_state 유지.
   (메모) clarification.choices는 빈 배열일 수 있다(reason=
   "unresolved_reference" — 대상 미특정, 자유 입력 유도만): UI는 버튼 없이
   free_input_hint 안내만 렌더링해야 한다.
@@ -174,6 +181,9 @@ temperature=0 / k 초기 5 / 판정 유효 3칸 / 파싱 재실패=sufficient �
 추출 재실패=exhausted("extract") / day 6~9는 v2 트랙으로 확정(사용자 결정, 기존 improved 우선순위 대체):
 v2 데이터 구축 → agents/v2 신설 → 명료화 → v2 테스트셋 → 3시스템 비교.
 re-ranking·본문 청크 등 기존 후보는 v2 설계에 흡수 또는 보존 아이디어 유지.
+보존 아이디어(Day 8 이후 개선 후보): 명료화 경계선 미발동("학생 영화 추천해줘"
+— u가 τ 부근에서 샘플링 확률 변동) 안정화, list_miss 시 되묻기 폴백(목록 조회
+실패를 소진 답변 대신 명료화 카드로 전환).
 
 ## 8. v2 트랙 (상세: docs/V2_DESIGN.md=데이터, docs/V2_AGENT.md=에이전트)
 
@@ -235,4 +245,8 @@ re-ranking·본문 청크 등 기존 후보는 v2 설계에 흡수 또는 보존
   해석·광범위형(추천/평가 등 — 해석은 하나, 범위만 넓음)의 원리상 미포착은
   향후 과제(동치 임계 0.75~0.85 양방향 실측 분리 간격 음수, 소표본 보정,
   τ 하향 아닌 한계 기록으로 후퇴). 다축 해석형(예: "학생 영화")은 현 설정
-  (0.85·τ=1.05)에서 포착됨(실측 u=1.221).
+  (0.85·τ=1.05)에서 포착됨(실측 u=1.221). comparison형 명확 질문은 u 부풀림
+  (표현 변주 분할)이 τ를 넘는 intent_split 단독 오발동 가능(실측 1.0889 관찰
+  — 향후 과제). 최상급 시간 질문(제일 최근작 등)은 문서 서술 인용에 의존해
+  오답 가능 — 연도 명시 질문은 정상. 코드 집계(argmax) 도입은 향후 과제
+  (사용자 결정으로 미수정 기록).

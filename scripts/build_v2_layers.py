@@ -119,6 +119,31 @@ def clean_wikitext(w: str) -> str:
 
 # ---------- 인포박스 ----------
 
+# 출연계 필드의 목록 템플릿 상위 패턴 (Day 7 (a) 승인 — 실데이터 계량:
+# 출연계 키 보유 8,614편 중 값 전체가 목록 템플릿이라 clean_wikitext에 통째로
+# 제거되던 복구 대상 298편 = 단순목록 294·ubl 1·br 3. plainlist는 동일 계열
+# 예방 포함. br 나열은 clean_wikitext가 이미 개행 처리하므로 별도 불요).
+LIST_TEMPLATE_NAME = re.compile(
+    r"^\s*(단순목록|평범한 목록|plainlist|ubl|unbulleted list)\s*(\||\n|$)", re.I)
+
+
+def _unwrap_list_templates(v: str) -> str:
+    """출연계 필드 값의 목록 템플릿 래퍼를 벗겨 내부 링크·이름을 보존.
+
+    래퍼만 제거하고 항목(불릿·탑레벨 파이프 구분)은 쉼표 연결로 바꿔 이후
+    clean_wikitext·split_names와 호환. 목록 외 템플릿은 기존 규칙(제거) 유지."""
+    def keep(block):
+        inner = block[2:-2]
+        m = LIST_TEMPLATE_NAME.match(inner)
+        if not m:
+            return block
+        body = inner[m.end():]
+        body = re.sub(r"^\s*[*#]+\s*", "", body, flags=re.M)  # 불릿 제거
+        parts = re.split(r"\|(?![^\[]*\]\])", body)  # 탑레벨 파이프만 분리
+        return " " + ", ".join(p.strip() for p in parts if p.strip()) + " "
+    return _strip_balanced(v, "{{", "}}", keep=keep)
+
+
 def extract_infobox(wikitext: str):
     m = re.search(r"\{\{[^{}\n|]*정보", wikitext)
     if not m:
@@ -158,6 +183,8 @@ def extract_infobox(wikitext: str):
             continue
         k, v = p.split("=", 1)
         k = k.strip()
+        if k in CAST_FIELDS:  # 출연계 한정 목록 템플릿 언랩 (Day 7 (a))
+            v = _unwrap_list_templates(v)
         v = clean_wikitext(v).replace("\n", ", ").strip(" ,")
         if k and v:
             fields[k] = v

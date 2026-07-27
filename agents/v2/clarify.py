@@ -22,7 +22,7 @@ from core import db  # noqa: E402
 from core.llm import call_llm_clarify  # noqa: E402
 
 from agents.v2 import knowledge  # noqa: E402
-from agents.v2.nodes import FIELD_SYNONYMS  # noqa: E402
+from agents.v2.nodes import FIELD_SYNONYMS, SECTION_WORDS  # noqa: E402
 
 # τ·동치 임계 (사용자 확정, 소표본 보정 한계 있음 — 명확 18·모호 4 문항 실측):
 # - τ=1.05: 명확 18문항 u 실측 max 1.0297 + 여유 0.02.
@@ -41,10 +41,9 @@ FREE_INPUT_HINT = "다른 의도라면 질문을 직접 구체적으로 적어 �
 
 # 사전 게이트 속성 어휘 (승인 B): DB 단일 매칭 + 아래 속성 명시 → 즉시 통과.
 # 구성 = 인포박스 질의 표현(FIELD_SYNONYMS의 표현부, hop전환과 동일 어휘) +
-# 섹션성 어휘(1층 청크의 대표 섹션명). 근거: 대상이 하나로 특정되고 묻는
-# 속성까지 명시된 질문은 해석이 갈릴 여지가 없다 — 샘플링 비용 0으로 통과.
-SECTION_WORDS = ("줄거리", "결말", "내용", "평가", "수상", "출연진", "캐스팅",
-                 "관객 수", "관객수", "흥행", "리뷰", "명대사")
+# 섹션성 어휘(nodes.SECTION_WORDS — 검색 노드의 섹션 우선 조회와 공유).
+# 근거: 대상이 하나로 특정되고 묻는 속성까지 명시된 질문은 해석이 갈릴 여지가
+# 없다 — 샘플링 비용 0으로 통과.
 ATTRIBUTE_WORDS = tuple(expr for expr, _ in FIELD_SYNONYMS) + SECTION_WORDS
 
 # 단일 음절 조사 (승인 A 보강): 2자 제목 base의 단어 경계 판정용.
@@ -126,17 +125,19 @@ def db_match(question: str, cap: int = 5) -> list:
     out = []
     for base, t in docs:
         rec = knowledge.infobox_by_title().get(t)
-        year, who, dt = _doc_year(t), "", (rec or {}).get("doc_type")
+        year, who, rep, dt = _doc_year(t), "", "", (rec or {}).get("doc_type")
         if rec:
             f = rec.get("fields", {})
             who = str(f.get("감독") or f.get("직업") or "")[:30]
+            rep = str(f.get("대표작") or "")[:30]
         # 연도 의미 명시: 인물은 "N년생"(출생), 그 외는 "N년"(개봉) — 표기가
         # 불명확하면 P2가 "N년 출연한"처럼 사실을 왜곡함 (통제 검증 ⑦ 실측)
         year_txt = ""
         if year:
             year_txt = f"{year}년생" if dt == "person" else f"{year}년"
-        meta = [x for x in (year_txt, who) if x]
-        out.append({"title": t, "base": base, "year": year,
+        meta = [x for x in (year_txt, who, (f"대표작 {rep}" if rep else "")) if x]
+        out.append({"title": t, "base": base, "year": year, "doc_type": dt,
+                    "kind": {"person": "인물", "movie": "영화"}.get(dt, "문서"),
                     "meta": " · ".join(meta)})
     return out
 
@@ -278,6 +279,8 @@ ASSEMBLE_USER_TMPL = """사용자의 질문이 여러 해석으로 갈렸다. �
 
 [원 질문] <<QUERY>>
 
+[발동 사유] <<REASON>>  (db_duplicate=동명 문서 존재, intent_split=해석 갈림)
+
 [해석 후보 — 의도 클러스터 대표]
 <<INTENTS>>
 
@@ -288,19 +291,29 @@ ASSEMBLE_USER_TMPL = """사용자의 질문이 여러 해석으로 갈렸다. �
 1. category: '선택지들' 자체가 무엇인지를 묶는 한 단어 — 질문의 주제가
    아니라 선택지의 종류다(선택지가 인물들이면 "인물", 작품들이면 "작품",
    해석 기준들이면 "기준"). 묶기 어려우면 "것".
-2. choices의 각 question은 [원 질문]의 의도를 그 해석으로 확정했을 때의
+2. 소스 우선순위: 발동 사유가 db_duplicate면 선택지의 축은 '매칭 2건
+   이상인 모호 키워드'의 각 매칭 항목이다 — 항목 하나가 선택지 하나가 된다.
+   구별 표기는 항목의 유형([인물]/[영화])과 인포박스 정보(직업·출생·대표작·
+   감독·연도)를 쓴다. 원 질문이 비교·목록 등 복합 구조면 그 구조를 보존한
+   채 모호한 키워드 자리만 각 항목으로 치환한 완전 질문을 만들어라
+   (예: "기생충 (영화, 2019)과 군체 중 어느 것이 먼저 개봉했나요?" /
+   "기생충 VR(2021)과 군체 중 어느 것이 먼저 개봉했나요?").
+   '단일 매칭' 표시가 붙은 항목(모호하지 않은 개체)은 선택지 축으로 삼지
+   마라. 의도 클러스터는 보조 참고만 하라. intent_split 발동이면 기존대로
+   클러스터 대표가 선택지 축이다.
+3. choices의 각 question은 [원 질문]의 의도를 그 해석으로 확정했을 때의
    "재구성이 완료된 완전한 질문 한 문장"이다 — 사용자가 그대로 다시
    묻는다고 생각하고 자연스럽게 써라. 각 question은 그 질문 하나만 읽어도
    대상이 특정되도록 써라 — '그 영화', '그 사람' 같은 대명사·지시어 사용
    금지.
-3. DB 항목 출신 선택지는 제공된 연도·감독 표기를 그대로 사용해 서로
+4. DB 항목 출신 선택지는 제공된 연도·감독 표기를 그대로 사용해 서로
    구별되게 하라. 제공되지 않은 작품·인물·연도를 지어내지 마라.
-4. 같은 뜻의 선택지는 하나로 합쳐라. label은 핵심 구분점을 담은 짧은
+5. 같은 뜻의 선택지는 하나로 합쳐라. label은 핵심 구분점을 담은 짧은
    구다(예: "2015년 베테랑").
-5. 선택지는 2~5개.
-6. 괄호가 붙은 문서 제목은 자연스러운 표현으로 풀어 써라
+6. 선택지는 2~5개.
+7. 괄호가 붙은 문서 제목은 자연스러운 표현으로 풀어 써라
    (예: 김성원 (희극인) → 희극인 김성원).
-7. 각 question은 의문문으로 끝나야 한다(예: "~은 무엇인가요?").
+8. 각 question은 의문문으로 끝나야 한다(예: "~은 무엇인가요?").
 
 예시:
 - 원 질문 "김철수 배우 프로필 알려줘",
@@ -335,13 +348,25 @@ def _parse_assembled(raw: str):
     return cat.strip() or "것", choices
 
 
-def assemble_choices(question: str, reps: list, matches: list, counter: dict):
+def assemble_choices(question: str, reps: list, matches: list, counter: dict,
+                     reason: list):
     intents_txt = "\n".join(f"- {r}" for r in reps) or "(없음)"
-    db_txt = "\n".join(
-        f"- {m['title']}" + (f" ({m['meta']})" if m["meta"] else "")
-        for m in matches) or "(없음)"
+    # 모호/단일 키워드 구분 표기 (결함 3 수정): 선택지 축은 동명 2건 이상
+    # 키워드의 항목이어야 하며, 단일 매칭 개체가 축이 되면 모호 키워드가
+    # 미해결로 남아 재실행에서 재발동 루프가 생긴다.
+    from collections import Counter
+    per_base = Counter(m["base"] for m in matches)
+    lines = []
+    for m in matches:
+        n = per_base[m["base"]]
+        tag = (f"모호 키워드 \"{m['base']}\" — 동명 {n}건" if n >= 2
+               else "단일 매칭 — 선택지 축 금지")
+        lines.append(f"- ({tag}) {m['title']} [{m.get('kind', '문서')}]"
+                     + (f" ({m['meta']})" if m["meta"] else ""))
+    db_txt = "\n".join(lines) or "(없음)"
     user = (ASSEMBLE_USER_TMPL
             .replace("<<QUERY>>", question)
+            .replace("<<REASON>>", ", ".join(reason))
             .replace("<<INTENTS>>", intents_txt)
             .replace("<<DB_ITEMS>>", db_txt))
     for _ in range(2):  # 파싱 실패 → 1회 재시도
@@ -415,7 +440,7 @@ def clarify_question(question: str, tau: float = None) -> dict:
     if not reason:
         return None
 
-    assembled = assemble_choices(question, reps, matches, counter)
+    assembled = assemble_choices(question, reps, matches, counter, reason)
     if assembled is None:  # 조립 파싱 재실패 → 보수적 통과 (오발동 방지)
         return None
     category, choices = assembled

@@ -218,6 +218,21 @@ def search_v2_filtered(query: str, titles: list, k: int = 5):
     return results, top1
 
 
+def get_v2_by_titles(titles: list) -> list:
+    """v2 청크를 title 목록으로 전량 조회 (섹션 우선 조회용 — 임베딩 없음)."""
+    if not titles:
+        return []
+    coll = get_v2_collection()
+    where = ({"title": titles[0]} if len(titles) == 1
+             else {"title": {"$in": titles}})
+    res = coll.get(where=where, include=["documents", "metadatas"])
+    return [
+        {"id": i, "title": m["title"], "text": d,
+         "section": m.get("section"), "doc_type": m.get("doc_type")}
+        for i, d, m in zip(res["ids"], res["documents"], res["metadatas"])
+    ]
+
+
 def get_v2_by_ids(ids: list) -> list:
     """v2 chunk id 목록 → [{id, title, text}]."""
     coll = get_v2_collection()

@@ -4,6 +4,9 @@
 - POST /ask_naive  {question, top_k} → agents/naive 위임
 - POST /ask        {question, top_k} → agents/baseline 위임 (max_retry 서버 고정 2 —
                    요청 파라미터로 받지 않음, core/config.MAX_RETRY 상수 사용)
+- POST /ask_v2     {question, top_k, clarify=True} → agents/v2 위임 (Day 7 5단계).
+                   응답은 /ask 상위집합(+clarification·list_summary·structured_hits,
+                   명료화 판정 정보는 clarification의 u·tau·reason·db_matches)
 
 응답에는 §6 계약 필드 외에 evidence를 포함한다 — 하네스 계약(CLAUDE.md:
 "evidence 포맷 포함 결과 out")에 따라 run_eval --http 채점에 필요.
@@ -19,6 +22,7 @@ from pydantic import BaseModel, Field  # noqa: E402
 
 from agents.baseline.graph import run_agent  # noqa: E402
 from agents.naive.pipeline import run_naive  # noqa: E402
+from agents.v2.graph import run_agent as run_agent_v2  # noqa: E402
 from core import db  # noqa: E402
 
 app = FastAPI(title="agentic-rag", description="한국어 위키 영화 도메인 Agentic RAG")
@@ -47,5 +51,17 @@ def ask_naive(req: AskRequest):
 def ask(req: AskRequest):
     try:
         return run_agent(req.question, top_k=req.top_k)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class AskV2Request(AskRequest):
+    clarify: bool = Field(True, description="명료화 게이트 (기본 ON)")
+
+
+@app.post("/ask_v2")
+def ask_v2(req: AskV2Request):
+    try:
+        return run_agent_v2(req.question, top_k=req.top_k, clarify=req.clarify)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

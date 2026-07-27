@@ -145,7 +145,15 @@ def planner_node(state: AgentStateV2) -> dict:
     }
 
 
-# ---------- 검색 (LLM 0회 — 이중 갈래 병합 + 2·3층 키 조회) ----------
+# 섹션성 어휘 — 명료화 사전 게이트와 검색 노드의 섹션 우선 조회가 공유
+# (결함 2 수정 (2): 질의에 섹션 어휘 + entities 문서 해석 시 해당 섹션 청크를
+# 거리 무관 포함. clarify.py가 이 목록을 import).
+SECTION_WORDS = ("줄거리", "결말", "내용", "평가", "수상", "출연진", "캐스팅",
+                 "관객 수", "관객수", "흥행", "리뷰", "명대사")
+MAX_SECTION_CHUNKS_PER_DOC = 6  # 섹션 우선 조회 문서당 상한 (Judge·Generator 입력 규모)
+
+
+# ---------- 검색 (LLM 0회 — 이중 갈래 병합 + 2·3층 키 조회 + 섹션 우선) ----------
 
 def _entity_keys(state: AgentStateV2) -> list:
     """정형 키 후보 = plan.entities(1차) + 중간 답(2차 — hop2의 대상 개체)."""
@@ -185,6 +193,27 @@ def make_search_node(top_k: int):
                 merged[r["id"]] = r
         results = sorted(merged.values(), key=lambda r: r["distance"])
         top1 = results[0]["distance"] if results else float("inf")
+
+        # 섹션 우선 조회 (결함 2 수정 (2)): 질의에 섹션성 어휘 + entities가
+        # 문서로 해석되면 해당 문서의 해당 섹션 청크 전부(분할 포함)를 거리
+        # 무관 포함. 문서당 상한 6, 갈래 표시 "section", 병합 목록 끝에 추가
+        # (top1_distance는 거리 갈래 기준 유지).
+        sec_words = [w for w in SECTION_WORDS if w in q]
+        if sec_words and titles:
+            per_doc = {}
+            for c in db.get_v2_by_titles(titles):
+                if any(w in (c.get("section") or "") for w in sec_words):
+                    per_doc.setdefault(c["title"], []).append(c)
+            for t in sorted(per_doc):
+                for c in sorted(per_doc[t], key=lambda x: x["id"])[
+                        :MAX_SECTION_CHUNKS_PER_DOC]:
+                    if c["id"] in merged:
+                        merged[c["id"]]["branch"] += "+section"
+                    else:
+                        c["branch"] = "section"
+                        c["distance"] = None
+                        merged[c["id"]] = c
+                        results.append(c)
         return {
             "search_results": results,
             "top1_distance": top1,
@@ -654,10 +683,11 @@ GENERATOR_SYSTEM = "너는 제공된 문서만 근거로 답하는 한국어 QA 
 GEN_INSTR = {
     ("정답형", False): (
         "질문에 대한 핵심 답을 첫 문장에서 명확히 제시하라. 이어서 제공 문서의 "
-        "줄거리·평가·수상 등 관련 내용을 활용해 근거를 2~4문장으로 상세히 서술하고, "
+        "줄거리·평가·수상 등 관련 내용을 활용해 근거를 상세히 서술하고, "
         "[정형 정보]의 인포박스가 있으면 부가 정보(감독·개봉일·장르·출연 등)를 "
         "덧붙여라. 이때 인포박스 필드 나열을 복사하지 말고, 필요한 값만 골라 "
-        "자연스러운 문장 한 줄로 녹여라."),
+        "자연스러운 문장 한 줄로 녹여라. 관련 섹션 재료가 풍부하면 문단 수 제한 "
+        "없이 충분히 상세하게 서술하라. 단 제공 문서 밖 서술 금지는 유지."),
     ("탐색형", False): (
         "각 대상의 근거 값을 항목별로 나열한 뒤(예: '- 박하사탕: 1999년 개봉'), "
         "마지막 줄에 비교 결론을 한 문장으로 제시하라. [정형 정보]의 인포박스가 "
@@ -667,8 +697,10 @@ GEN_INSTR = {
         "[목록 조회 결과]의 항목을 빠짐없이 나열하라('- 항목' 형식). 각 항목에 조회 "
         "결과나 [정형 정보]에서 확인되는 연도·장르 등을 괄호로 덧붙여라. 연도가 "
         "확인되지 않는 항목은 괄호 표기를 생략하라. 첫 문장에 총 항목 수를 밝히고, "
-        "연도가 있는 항목은 연도순으로 정렬하라. 항목이 50개를 초과하면 연도순 "
-        "50개만 나열하고 마지막에 '외 N편(총 M편)'으로 요약하라."),
+        "연도가 있는 항목은 연도 내림차순(최신 우선)으로 정렬하라. 항목이 50개를 "
+        "초과하면 최신 순 50개만 나열하고 마지막에 '외 N편(총 M편)'으로 요약하라. "
+        "첫 문장의 총 개수는 나열 개수가 아니라 전체 항목 수 M을 말하라"
+        "(예: 총 108편)."),
     ("정답형", True): (
         "검색이 충분한 근거를 찾지 못한 채 종료됐다. 확정적인 답을 단정하지 마라. "
         "문서에서 확인되는 부분까지만 정리하고, 무엇을 확인할 수 없었는지 명시하라. "
@@ -702,7 +734,11 @@ def _serialize_list(list_results: dict) -> str:
         lines = [f"[필모그래피 조회] 키: {list_results['key']} "
                  f"(매칭: {', '.join(list_results.get('matched_keys', []))}) — "
                  f"{len(list_results['items'])}항목"]
-        for e in list_results["items"]:
+        # 연도 내림차순(최신 우선, 연도 미상은 뒤) — Day 7 (b) 승인. 코드 정렬로
+        # LLM 정렬 부담을 없애고 50개 상한 절단이 최신작을 유지하게 한다.
+        items = sorted(list_results["items"],
+                       key=lambda e: -(e.get("연도") or 0))
+        for e in items:
             y = f" ({e['연도']})" if e.get("연도") else ""
             lines.append(f"- {e['작품']}{y}")
     else:

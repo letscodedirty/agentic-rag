@@ -1,14 +1,16 @@
-"""SPEC §6 화면 계약: Streamlit 탭 2개.
+"""SPEC §6 화면 계약 (Day 7 5단계 확정): 단독 탭 3개, 비교 탭·시스템 선택기 없음.
 
-① Agentic 단독 — 시스템 선택기(현재 baseline만), 입력 + top_k 슬라이더,
-   답변 + 전략 뱃지 + 출처, expander 4종(계획/hop별 판정 표/재작성 이력/중간 답·통계),
-   exhausted 경고 박스
-② 비교 — 입력 하나 → naive | agentic 좌우
+① v2(기본 탭) — 기존 Agentic 구성 + 명료화 판정 expander + 정형 조회 요약 +
+   되묻기 카드(choices 버튼 클릭 = question 입력창 채움 → 재제출)
+② baseline — 기존 단독 탭 구성 그대로
+③ naive — 입력 + 답변 + 출처 링크만
 
-공통: /health 사전 확인(실패 시 안내 문구), session_state 유지.
+공통: /health 사전 확인, session_state 유지, 각 탭 상단 검색 코퍼스 표기,
+출처 title은 https://ko.wikipedia.org/wiki/{title} 기계 조립 링크(LLM 생성 금지).
 계층 규칙: frontend는 HTTP로 backend만 호출한다 (로직·DB 접근 금지).
 """
 import os
+from urllib.parse import quote
 
 import requests
 import streamlit as st
@@ -36,7 +38,7 @@ except Exception:
     st.stop()
 
 st.caption(
-    f"backend 정상 · 청크 {health['db_chunks']:,}개 · distance space: {health['space']}"
+    f"backend 정상 · v1 청크 {health['db_chunks']:,}개 · distance space: {health['space']}"
 )
 
 
@@ -51,22 +53,32 @@ def post(path: str, question: str, top_k: int, timeout: int = 180):
 
 
 def strategy_badge(strategy: str) -> str:
-    color = "#1f77b4" if strategy == "정답형" else "#9467bd"
+    color = {"정답형": "#1f77b4", "탐색형": "#9467bd", "목록형": "#2ca02c"}.get(
+        strategy, "#7f7f7f")
     return (
         f"<span style='background:{color};color:white;padding:2px 10px;"
         f"border-radius:10px;font-size:0.85em'>{strategy}</span>"
     )
 
 
-def render_sources(sources: list):
+def wiki_link(doc_title: str) -> str:
+    """출처 링크는 기계 조립 (SPEC §6 — LLM 생성 금지, 3탭 공통)."""
+    return f"[{doc_title}](https://ko.wikipedia.org/wiki/{quote(doc_title)})"
+
+
+def render_sources(sources: list, cap: int = 15):
     if not sources:
         return
     st.markdown("**출처**")
     for s in sources:
-        st.markdown(f"- hop {s['hop']}: {', '.join(s['titles'])}")
+        docs = list(dict.fromkeys(t.split("::")[0] for t in s.get("titles", [])))
+        shown = ", ".join(wiki_link(d) for d in docs[:cap])
+        more = f" 외 {len(docs) - cap}건" if len(docs) > cap else ""
+        st.markdown(f"- hop {s['hop']}: {shown}{more}")
 
 
 def render_agentic(res: dict):
+    """baseline·v2 공통 본문 (기존 단독 탭 구성)."""
     if res.get("exhausted"):
         st.warning(
             f"⚠️ 검색 한도 소진(exhausted, 사유: {res.get('exhausted_reason') or '?'}) — "
@@ -107,15 +119,86 @@ def render_agentic(res: dict):
         )
 
 
-tab_single, tab_compare = st.tabs(["① Agentic 단독", "② naive vs agentic 비교"])
+def _fill_v2_question(q: str):
+    st.session_state["v2_question"] = q
 
-# ---------- 탭 ①: Agentic 단독 ----------
-with tab_single:
-    col_sys, col_k = st.columns([1, 2])
-    with col_sys:
-        system = st.selectbox("시스템", ["baseline"], key="system_select")  # day 7 후 improved 추가
-    with col_k:
-        top_k = st.slider("top_k (검색 문서 수)", 1, 10, 5, key="single_topk")
+
+def render_clarification_card(clar: dict):
+    """되묻기 카드 (SPEC §6): category 헤더 + choices 버튼 + 자유 입력 안내.
+    choices=[]면 버튼 없이 자유 입력 유도 문구만."""
+    with st.container(border=True):
+        st.markdown(f"### 🔍 어느 **{clar.get('category', '것')}** 말씀이신가요?")
+        choices = clar.get("choices") or []
+        if choices:
+            st.caption("선택지를 클릭하면 입력창에 채워집니다 — 다시 '질문하기'를 눌러 주세요.")
+            for i, c in enumerate(choices):
+                st.button(
+                    c["label"], key=f"clar_btn_{i}",
+                    on_click=_fill_v2_question, args=(c["question"],),
+                )
+        else:
+            st.markdown("질문의 대상을 특정할 수 없습니다.")
+        st.info(clar.get("free_input_hint") or "질문을 구체적으로 다시 적어 주세요.")
+
+
+def render_v2_extras(res: dict):
+    """v2 고유 패널: 명료화 판정 + 정형 조회 요약."""
+    clar = res.get("clarification")
+    with st.expander("⑤ 명료화 판정 (Clarify)"):
+        if clar:
+            st.markdown(
+                f"- 발동: **예** · 사유: {', '.join(clar.get('reason') or [])}\n"
+                f"- u(x) = {clar.get('u')} / τ = {clar.get('tau')}\n"
+                f"- DB 동명 매칭: {', '.join(clar.get('db_matches') or []) or '없음'}\n"
+                f"- 명료화 LLM 호출: {res.get('clarify_calls', 0)}회 (상한 13)"
+            )
+        else:
+            st.caption("발동 없음 — 명확 질문으로 판정되어 그대로 통과했습니다.")
+    if not clar:
+        with st.expander("⑥ 정형 조회 요약 (2·3층)"):
+            sh = res.get("structured_hits") or {}
+            st.markdown(
+                f"- 인포박스 적중: {', '.join(sh.get('infobox') or []) or '없음'}\n"
+                f"- 필모그래피 적중: {', '.join(sh.get('filmography') or []) or '없음'}"
+            )
+            ls = res.get("list_summary")
+            if ls:
+                st.markdown(
+                    f"- 목록 조회: {ls.get('kind')} / 키 '{ls.get('key')}' / "
+                    f"{ls.get('n_items')}항목"
+                )
+
+
+tab_v2, tab_base, tab_naive = st.tabs(["① v2 (Agentic+3층)", "② baseline", "③ naive"])
+
+# ---------- 탭 ①: v2 (기본 탭) ----------
+with tab_v2:
+    st.caption("검색 코퍼스: 전문 3층 DB (./db_v2 — 섹션 청크·인포박스·필모 색인)")
+    top_k_v2 = st.slider("top_k (검색 문서 수)", 1, 10, 10, key="v2_topk")
+    q_v2 = st.text_input("질문", key="v2_question",
+                         placeholder="예: 배우 유해진이 출연한 영화를 모두 알려줘")
+    if st.button("질문하기", key="v2_ask", type="primary") and q_v2.strip():
+        with st.spinner("v2 그래프 실행 중… (명료화 판정 포함, 5~30초)"):
+            try:
+                st.session_state["v2_result"] = post("/ask_v2", q_v2.strip(), top_k_v2)
+                st.session_state["v2_asked"] = q_v2.strip()
+            except Exception as e:
+                st.session_state["v2_result"] = None
+                st.error(f"요청 실패: {e}")
+    if st.session_state.get("v2_result"):
+        res = st.session_state["v2_result"]
+        st.divider()
+        st.caption(f"질문: {st.session_state.get('v2_asked', '')}")
+        if res.get("clarification"):
+            render_clarification_card(res["clarification"])
+        else:
+            render_agentic(res)
+        render_v2_extras(res)
+
+# ---------- 탭 ②: baseline (기존 단독 탭 구성 그대로) ----------
+with tab_base:
+    st.caption("검색 코퍼스: 서두 DB (./db — v1 서두 청크)")
+    top_k = st.slider("top_k (검색 문서 수)", 1, 10, 5, key="single_topk")
     q1 = st.text_input("질문", key="single_question",
                        placeholder="예: 2012년에 개봉한 영화 러브픽션의 감독은 어떤 학교를 졸업했는가?")
     if st.button("질문하기", key="single_ask", type="primary") and q1.strip():
@@ -131,33 +214,22 @@ with tab_single:
         st.caption(f"질문: {st.session_state.get('single_asked', '')}")
         render_agentic(st.session_state["single_result"])
 
-# ---------- 탭 ②: 비교 ----------
-with tab_compare:
-    top_k2 = st.slider("top_k (양쪽 공통)", 1, 10, 5, key="compare_topk")
-    q2 = st.text_input("질문 (같은 질문을 naive와 agentic에 동시에 보냅니다)",
-                       key="compare_question")
-    if st.button("비교 실행", key="compare_ask", type="primary") and q2.strip():
-        with st.spinner("naive + agentic 실행 중…"):
+# ---------- 탭 ③: naive (입력 + 답변 + 출처만) ----------
+with tab_naive:
+    st.caption("검색 코퍼스: 서두 DB (./db — v1 서두 청크)")
+    q3 = st.text_input("질문", key="naive_question",
+                       placeholder="예: 영화 극한직업의 장르는?")
+    if st.button("질문하기", key="naive_ask", type="primary") and q3.strip():
+        with st.spinner("naive 1-pass 실행 중…"):
             try:
-                naive_res = post("/ask_naive", q2.strip(), top_k2)
-                agentic_res = post("/ask", q2.strip(), top_k2)
-                st.session_state["compare_results"] = (naive_res, agentic_res)
-                st.session_state["compare_asked"] = q2.strip()
+                st.session_state["naive_result"] = post("/ask_naive", q3.strip(), 10)
+                st.session_state["naive_asked"] = q3.strip()
             except Exception as e:
-                st.session_state["compare_results"] = None
+                st.session_state["naive_result"] = None
                 st.error(f"요청 실패: {e}")
-    if st.session_state.get("compare_results"):
-        naive_res, agentic_res = st.session_state["compare_results"]
+    if st.session_state.get("naive_result"):
+        res = st.session_state["naive_result"]
         st.divider()
-        st.caption(f"질문: {st.session_state.get('compare_asked', '')}")
-        left, right = st.columns(2)
-        with left:
-            st.subheader("naive (1-pass)")
-            st.markdown(naive_res["answer"])
-            render_sources(naive_res.get("sources") or [])
-            st.caption(
-                f"LLM {naive_res.get('llm_calls')}회 · {naive_res.get('elapsed_sec')}초"
-            )
-        with right:
-            st.subheader("agentic (baseline)")
-            render_agentic(agentic_res)
+        st.caption(f"질문: {st.session_state.get('naive_asked', '')}")
+        st.markdown(res["answer"])
+        render_sources(res.get("sources") or [])
