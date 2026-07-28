@@ -100,11 +100,15 @@ def get_by_ids(ids: list) -> list:
 
 
 def db_info() -> dict:
-    """/health용: 청크 수 + distance space."""
+    """/health용: 청크 수 + distance space.
+
+    space 판독은 _v2_space 폴백 사용(Day 8 0단계 지시) — v2 컬렉션 주입
+    상태에서 hnsw 설정이 configuration에 있어 metadata만으로는 None이 되는
+    문제 보정. v1 컬렉션은 기존과 동일하게 metadata에서 읽힌다."""
     coll = get_collection()
     return {
         "db_chunks": coll.count(),
-        "space": (coll.metadata or {}).get("hnsw:space"),
+        "space": _v2_space(coll),
     }
 
 
@@ -250,3 +254,18 @@ def db_v2_info() -> dict:
         "db_chunks": coll.count(),
         "space": _v2_space(coll),
     }
+
+
+def set_search_collection(target: str = "v1"):
+    """검색 코퍼스 주입 (Day 8 0단계, SPEC §8 "3시스템 전부 v2 1층 검색" —
+    추가만, 기존 함수 시그니처·동작 무변경).
+
+    "v2": v1 검색 경로(search/get_by_ids/db_info — get_collection 캐시 경유)가
+    v2 1층 컬렉션(./db_v2, wiki_movies_v2)을 사용하게 한다. cosine 검증은
+    get_v2_collection() 내부 assert가 수행. "v1": 캐시를 비워 기본(./db,
+    wiki_movies)으로 복원. naive·baseline 코드는 동결 그대로 — 평가 하네스가
+    실행 전에 시스템별로 호출한다(run_eval --corpus).
+    """
+    global _collection
+    assert target in ("v1", "v2"), f"unknown corpus target: {target}"
+    _collection = get_v2_collection() if target == "v2" else None

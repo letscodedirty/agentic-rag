@@ -163,8 +163,17 @@ def main():
     ap.add_argument("--tag", default=None)
     ap.add_argument("--top-k", type=int, default=5)
     ap.add_argument("--http", action="store_true")
+    ap.add_argument("--corpus", default="v1", choices=["v1", "v2"],
+                    help="검색 코퍼스 주입 (SPEC §8: 3시스템 동일 v2 1층 비교. "
+                         "--http 모드에서는 미지원 — 서버 측 코퍼스를 따름)")
     args = ap.parse_args()
-    tag = args.tag or f"{args.system}_k{args.top_k}_s{args.subset}"
+    if args.corpus == "v2":
+        assert not args.http, "--corpus v2는 --http와 병용 불가 (프로세스 내 주입)"
+        from core import db as _db
+
+        _db.set_search_collection("v2")
+    tag = args.tag or (f"{args.system}_k{args.top_k}_s{args.subset}"
+                       + ("_cv2" if args.corpus == "v2" else ""))
 
     testset = load_testset(args.subset)
     runner = get_runner(args.system, args.top_k, args.http)
@@ -232,7 +241,7 @@ def main():
     result = {
         "config": {
             "system": args.system, "subset": args.subset, "top_k": args.top_k,
-            "http": args.http, "tag": tag,
+            "http": args.http, "corpus": args.corpus, "tag": tag,
             "llm_model": os.environ.get("LLM_MODEL"),
             "embed_model": os.environ.get("EMBED_MODEL"),
             "gate_threshold": gate_threshold(),
