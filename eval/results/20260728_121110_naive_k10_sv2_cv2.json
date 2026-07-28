@@ -1,0 +1,1614 @@
+{
+  "config": {
+    "system": "naive",
+    "subset": "v2",
+    "top_k": 10,
+    "http": false,
+    "corpus": "v2",
+    "tag": "naive_k10_sv2_cv2",
+    "evidence_order": "structured_first",
+    "llm_model": "gpt-4o-mini",
+    "embed_model": "text-embedding-3-small",
+    "gate_threshold": 0.7,
+    "timestamp": "2026-07-28T12:11:10",
+    "elapsed_sec": 95.9
+  },
+  "metrics": {
+    "overall": {
+      "n": 50,
+      "hit_rate": 0.26,
+      "mrr": 0.1507
+    },
+    "single": {
+      "n": 5,
+      "hit_rate": 0.2,
+      "mrr": 0.1
+    },
+    "bridge": {
+      "n": 10,
+      "hit_rate": 0.0,
+      "mrr": 0.0
+    },
+    "comparison": {
+      "n": 10,
+      "hit_rate": 0.4,
+      "mrr": 0.2333
+    },
+    "list": {
+      "n": 12,
+      "hit_rate": 0.3333,
+      "mrr": 0.1556
+    },
+    "ambiguous": {
+      "n": 13,
+      "hit_rate": 0.3077,
+      "mrr": 0.2179
+    },
+    "llm_calls_avg": 1.0,
+    "retry_rate": null,
+    "planner_accuracy": null,
+    "top1_distance": {
+      "n": 50,
+      "min": 0.3475,
+      "p25": 0.4672,
+      "p50": 0.5001,
+      "p75": 0.5534,
+      "p90": 0.5805,
+      "p95": 0.6354,
+      "p99": 0.6564,
+      "max": 0.6564
+    }
+  },
+  "per_question": [
+    {
+      "qid": 1,
+      "question": "극한직업은 누가 감독했어?",
+      "qtype": "single",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: ...)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5485908389091492,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 2.81
+    },
+    {
+      "qid": 2,
+      "question": "서울의 봄 줄거리 알려줘",
+      "qtype": "single",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 \"서울의 봄\"에 대한 줄거리는 확인할 수 없습니다. (출처: 청룡영화상의 수상 목록 (2020년대))",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5705294609069824,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.52
+    },
+    {
+      "qid": 3,
+      "question": "파묘는 무슨 장르야?",
+      "qtype": "single",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: ...)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.6564337015151978,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.38
+    },
+    {
+      "qid": 4,
+      "question": "영화 샤인의 감독이 누구야?",
+      "qtype": "single",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "영화 \"샤인\"의 감독은 박석영입니다. (출처: 샤인 (2024년))",
+      "score": {
+        "hit": true,
+        "mrr": 0.5,
+        "best_rank": 2
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.4887462854385376,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.15
+    },
+    {
+      "qid": 5,
+      "question": "아저씨에서 원빈이 맡은 역할 이름이 뭐야?",
+      "qtype": "single",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: ...)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5328230857849121,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.04
+    },
+    {
+      "qid": 6,
+      "question": "기생충 감독이 나온 대학교가 어디야?",
+      "qtype": "bridge",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 기생충 감독에 대한 정보는 확인할 수 없습니다. (출처: 대학로에서 매춘하다가 토막 살해당한 여고생 아직 대학로에 있다)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.49973130226135254,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.54
+    },
+    {
+      "qid": 7,
+      "question": "올드보이 감독의 데뷔작이 뭐야?",
+      "qtype": "bridge",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: 올드보이)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.49932217597961426,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.16
+    },
+    {
+      "qid": 8,
+      "question": "괴물 감독 고향이 어디야?",
+      "qtype": "bridge",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: 이동욱 (배우))",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5519975423812866,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.1
+    },
+    {
+      "qid": 9,
+      "question": "택시운전사 주연 배우는 언제 데뷔했어?",
+      "qtype": "bridge",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "택시운전사의 주연 배우인 송강호는 1996년 영화 《넘버 3》로 영화배우 데뷔하였습니다. (출처: 택시운전사 (영화))",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.49159860610961914,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.37
+    },
+    {
+      "qid": 10,
+      "question": "베를린 감독은 몇 년생이야?",
+      "qtype": "bridge",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: 베일 부인)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.4637438654899597,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.1
+    },
+    {
+      "qid": 11,
+      "question": "왕의 남자에서 공길 역을 맡은 배우의 소속사가 어디야?",
+      "qtype": "bridge",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: 없음)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5694852471351624,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.0
+    },
+    {
+      "qid": 12,
+      "question": "헤어질 결심 여자 주인공은 어느 나라 사람이야?",
+      "qtype": "bridge",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: ...)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.6067371368408203,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.04
+    },
+    {
+      "qid": 13,
+      "question": "암살 감독은 어떤 학교를 졸업했어?",
+      "qtype": "bridge",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 암살 감독에 대한 정보는 확인할 수 없습니다. (출처: 없음)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.4672067165374756,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 0.99
+    },
+    {
+      "qid": 14,
+      "question": "곡성 감독의 첫 영화가 뭐야?",
+      "qtype": "bridge",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: 없음)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.42708271741867065,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.04
+    },
+    {
+      "qid": 15,
+      "question": "아가씨 감독의 배우자는 누구야?",
+      "qtype": "bridge",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: ...)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5008155107498169,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.1
+    },
+    {
+      "qid": 16,
+      "question": "올드보이랑 박하사탕 중에 뭐가 먼저 개봉했어?",
+      "qtype": "comparison",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: ...)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.6450231075286865,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.05
+    },
+    {
+      "qid": 17,
+      "question": "명량이랑 극한직업 중에 관객수 더 많은 게 뭐야?",
+      "qtype": "comparison",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "《명량》의 총 관객 수는 1,761만 명으로, 《극한직업》의 총 관객 수 1,626만 명보다 더 많습니다. 따라서 관객 수가 더 많은 영화는 《명량》입니다. (출처: 명량 (영화))",
+      "score": {
+        "hit": true,
+        "mrr": 1.0,
+        "best_rank": 1
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.553386390209198,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.61
+    },
+    {
+      "qid": 18,
+      "question": "송강호랑 최민식 중에 누가 나이가 더 많아?",
+      "qtype": "comparison",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "송강호(1967년 1월 17일 생)와 최민식(1972년 3월 30일 생) 중에서 송강호가 더 나이가 많습니다. 송강호는 1967년생으로 현재 56세이며, 최민식은 1972년생으로 현재 51세입니다. \n\n(출처: 송강호)",
+      "score": {
+        "hit": true,
+        "mrr": 0.3333333333333333,
+        "best_rank": 3
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.49444472789764404,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.51
+    },
+    {
+      "qid": 19,
+      "question": "부산행하고 반도 중에 어떤 게 더 나중에 나왔어?",
+      "qtype": "comparison",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "부산행은 2016년에 개봉하였고, 반도는 2020년에 개봉하였습니다. 따라서 반도가 더 나중에 나왔습니다. (출처: 문서)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5263762474060059,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.89
+    },
+    {
+      "qid": 20,
+      "question": "괴물이랑 부산행 중 관객이 더 많이 든 영화는?",
+      "qtype": "comparison",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "《부산행》은 2016년에 개봉하여 11,567,662명의 관객을 기록하며 천만 관객을 돌파한 영화입니다. 반면, 《괴물》은 2006년에 개봉하여 1000만 관객을 돌파한 영화이지만, 구체적인 관객 수는 문서에서 확인할 수 없습니다. 따라서 관객 수가 더 많은 영화는 《부산행》입니다. (출처: 제37회 청룡영화상)",
+      "score": {
+        "hit": true,
+        "mrr": 0.5,
+        "best_rank": 2
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.43693363666534424,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 4.34
+    },
+    {
+      "qid": 21,
+      "question": "봉준호와 박찬욱 중 누가 먼저 데뷔했어?",
+      "qtype": "comparison",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "봉준호가 1993년 단편 영화 《백색인》으로 데뷔한 반면, 박찬욱에 대한 정보는 문서에서 확인할 수 없습니다. 따라서 봉준호가 먼저 데뷔한 것으로 보입니다. (출처: 봉준호)",
+      "score": {
+        "hit": true,
+        "mrr": 0.5,
+        "best_rank": 2
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.4716818332672119,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 3.77
+    },
+    {
+      "qid": 22,
+      "question": "아저씨와 추격자 중에 뭐가 더 일찍 개봉했어?",
+      "qtype": "comparison",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 \"아저씨\"와 \"추격자\"의 개봉일에 대한 정보는 확인할 수 없습니다. 따라서 어떤 영화가 더 일찍 개봉했는지 알 수 없습니다. (출처: 문서)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5927574038505554,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.56
+    },
+    {
+      "qid": 23,
+      "question": "윤여정이랑 김혜자 중에 누가 언니야?",
+      "qtype": "comparison",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: 문서)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.41660237312316895,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.12
+    },
+    {
+      "qid": 24,
+      "question": "헌트랑 남산의 부장들 중 뭐가 먼저야?",
+      "qtype": "comparison",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: 남산의 부장들)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5686196088790894,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.22
+    },
+    {
+      "qid": 25,
+      "question": "올드보이랑 곡성 중에 상영시간 더 긴 게 뭐야?",
+      "qtype": "comparison",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 올드보이와 곡성의 상영시간에 대한 정보는 확인할 수 없습니다. (출처: 문서)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5301801562309265,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.48
+    },
+    {
+      "qid": 26,
+      "question": "유해진 나온 영화 전부 알려줘",
+      "qtype": "list",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 유해진이 출연한 영화에 대한 정보는 확인할 수 없습니다. (출처: 제공된 문서)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.501319408416748,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.2
+    },
+    {
+      "qid": 27,
+      "question": "마동석이 출연한 영화 목록 보여줘",
+      "qtype": "list",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 마동석이 출연한 영화 목록은 다음과 같습니다:\n\n1. 《배우는 배우다》 - 깡다구 역 (특별출연)\n2. 《노리개》 - 이장호 역\n\n문서에서 확인할 수 있는 마동석의 출연작은 이 두 편입니다. (출처: 배우는 배우다)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.45869171619415283,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.81
+    },
+    {
+      "qid": 28,
+      "question": "전도연이 출연한 작품들 좀 보여줘",
+      "qtype": "list",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "전도연이 출연한 작품들은 다음과 같습니다:\n\n- 룩앳미 터치미 키스미 (2023) - 조연 - 태묵 역\n- 션샤인 패밀리 (2020) - 조연 - 지구대장 역\n- 황무지 5월의 고해 (2020) - 주연\n- 종이꽃 (2020) - 단역 - 양사장 역\n- 어멍 (2019) - 단역 - 역감독 역\n- 늦여름 (2018) - 조연 - 호은 역, 기획\n- 딥 (2018) - 기획\n- 타클라미칸 (2018) - 단역 - 야구 아빠 역\n- 실종 2 (2017) - 단역 - 홍이사 역\n- 루시드 드림 (2017) - 단역 - 사진사 역\n- 딜쿠샤 (2016) - 단역 - 후배남 역\n- 스플릿 (2016) - 시나리오에디터, 단역 - 희진 아버지 역\n- 시간이탈자 (2016) - 단역 - 서경고 교감 역\n- 파일 : 4022일의 사육 (2015) - 기획, 단역 - 연구소 원장 역\n- 허삼관 (2015) - 조연 - 대륙식당 사장 역\n- 우리는 형제 입니다 (2014) - 조연 - 국장 역\n- 군도:민란의 시대 (2014) - 단역 - 이방 역\n- 변호인 (2013) - 단역 - 차인감 역\n- 톱스타 (2013) - 특별출연 - 김경민 매니저 역\n- 생생활활 (2013) - 조연 - 경제학 교수 역\n- 붉은 바캉스 검은 웨딩 (2011) - 주연 - 태묵 역\n- 두 여자 (2010) - 우정출연 - 시상식 사회자 역\n- 집행자 (2009) - 제작, 단역 - 검은 양복 역\n- 실종 (2009) - 제작\n- 마지막선물...권휴 (2008) - 공동제작, 단역 - 사장 역\n- 첫눈 (2007) - 조연 - 민의 아버지 역\n- 중천 (2006) - 단역 - 귀족 자재 2 역\n- 조폭 마누라 2 (2003) - 단역 - 파출소 취객 역\n- 청풍명월 (2003) - 단역 - 이 대감 역\n- 보리울의 여름 (2003) - 기획, 제작총지휘\n- 하얀 방 (2002) - 조연 - 보도부장 역\n- 몽중인 (2002) - 우정출연 - 매니저 역\n- 이것이 법이다 (2001) - 단역\n- 엽기적인 그녀 (2001) - 단역 - 수위 목소리 역\n- 리베라 메 (2000) - 단역 - 태성 역\n- 주노명 베이커리 (2000) - 단역 - 문방구 역\n- 간첩 리철진 (1999) - 단역 - 수사팀장 2 역\n- 파파라치 (1999) - 주연 - 경비 역\n- 산전수전 (1999) - 단역 - 암벽 강사\n- 연풍연가 (1999) - 우정출연 - 택시기사 역\n\n(출처: 조선묵)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5568519830703735,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 8.77
+    },
+    {
+      "qid": 29,
+      "question": "하정우 필모그래피 알려줘",
+      "qtype": "list",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 하정우의 필모그래피에 대한 구체적인 내용은 확인할 수 없습니다. 하정우는 배우, 영화감독, 각본가, 영화 제작자이며, 활동 기간은 2002년부터 현재까지입니다. (출처: 하정우)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5777833461761475,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.41
+    },
+    {
+      "qid": 30,
+      "question": "크리스 프랫 출연작 알려줘",
+      "qtype": "list",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 크리스 프랫의 출연작에 대한 정보는 확인할 수 없습니다. (출처: 문서)",
+      "score": {
+        "hit": true,
+        "mrr": 0.16666666666666666,
+        "best_rank": 6
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5804547667503357,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.14
+    },
+    {
+      "qid": 31,
+      "question": "봉준호 감독이 만든 영화 다 알려줘",
+      "qtype": "list",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "봉준호 감독이 만든 영화는 다음과 같습니다:\n\n1. **백색인** (1994, 단편)\n2. **지리멸렬** (1994, 단편)\n3. **플란다스의 개** (2000)\n4. **살인의 추억** (2003)\n5. **괴물** (2006)\n6. **설국열차** (2013)\n7. **옥자** (2017)\n8. **기생충** (2019)\n\n이 외에 봉준호 감독이 참여한 작품에 대한 정보는 문서에서 확인할 수 없습니다. (출처: 봉준호)",
+      "score": {
+        "hit": true,
+        "mrr": 0.2,
+        "best_rank": 5
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.4090379476547241,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 2.58
+    },
+    {
+      "qid": 32,
+      "question": "2019년에 나온 한국 영화 뭐뭐 있어?",
+      "qtype": "list",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "2019년에 나온 한국 영화는 다음과 같습니다:\n\n1. 침입자\n2. 히트맨\n3. 배심원들\n4. 나를 찾아줘\n5. 장사리 잊혀진 영웅들\n6. 영화로운 나날\n7. 난폭한 기록\n8. 기방도령\n\n(출처: 2019년 대한민국의 영화)",
+      "score": {
+        "hit": true,
+        "mrr": 1.0,
+        "best_rank": 1
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.34753239154815674,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.76
+    },
+    {
+      "qid": 33,
+      "question": "2023년 개봉한 한국 영화 목록 알려줘",
+      "qtype": "list",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "2023년에 개봉한 한국 영화 목록은 다음과 같습니다:\n\n1. 민족\n2. 바람개비 (개봉일: 2023년 5월 10일)\n3. 제비 (개봉일: 2023년 4월 12일)\n4. 빈틈 없는 사이 (개봉일: 2023년 7월 5일)\n5. 너를 줍다 (개봉일: 2023년 11월 8일)\n6. 봉태리\n\n(출처: 민족 (영화))",
+      "score": {
+        "hit": true,
+        "mrr": 0.5,
+        "best_rank": 2
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.4288305640220642,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 2.01
+    },
+    {
+      "qid": 34,
+      "question": "한국 좀비 영화 추천해줘",
+      "qtype": "list",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "추천할 수 있는 한국 좀비 영화는 \"좀비 파이터\"와 \"미스터 좀비\"입니다. \n\n- \"좀비 파이터\"는 2020년에 개봉한 영화로, 감독은 임지환이며 장르는 액션, 드라마, 공포, 가족입니다.\n- \"미스터 좀비\"는 2010년에 개봉한 영화로, 감독은 이수성이며 장르는 공포, 코미디입니다.\n\n이 두 영화를 추천드립니다. (출처: 좀비 파이터)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.4905228614807129,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 2.09
+    },
+    {
+      "qid": 35,
+      "question": "한국 코미디 영화 몇 개만 알려줘",
+      "qtype": "list",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 확인할 수 없습니다. (출처: 이상화 (희극인))",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.4348222613334656,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.01
+    },
+    {
+      "qid": 36,
+      "question": "스릴러 영화 추천 좀 해줘",
+      "qtype": "list",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "문서에서 스릴러 영화에 대한 추천은 확인할 수 없습니다. (출처: 제공된 문서)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5707462430000305,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.2
+    },
+    {
+      "qid": 37,
+      "question": "범죄 영화 추천해줘",
+      "qtype": "list",
+      "subtype": null,
+      "intended_query": null,
+      "answer": "추천할 수 있는 범죄 영화는 다음과 같습니다:\n\n1. **범죄소년** - 2012년에 개봉한 영화로, 강이관 감독이 연출하였으며 여러 국제 영화제에서 수상한 바 있습니다.\n2. **범죄해결 특수반** - 2020년에 개봉한 액션, 범죄 장르의 영화입니다.\n3. **우리 이웃의 범죄** - 2011년에 개봉한 드라마, 범죄 장르의 영화입니다.\n4. **범죄도시** - 2017년에 개봉한 범죄 액션 영화로, 마동석이 주연을 맡고 있으며, 중범죄자를 추적하는 형사의 이야기를 다룹니다.\n5. **협상** - 2018년에 개봉한 범죄 스릴러 영화로, 유능한 협상가와 국제범죄자 간의 대치를 그린 이야기입니다.\n6. **범죄의 여왕** - 2016년에 개봉한 스릴러 장르의 영화입니다.\n\n이 영화들은 각각의 독특한 이야기와 장르로 범죄를 다루고 있습니다. (출처: 범죄소년, 범죄해결 특수반, 우리 이웃의 범죄, 범죄도시, 협상, 범죄의 여왕)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.4846024513244629,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 4.1
+    },
+    {
+      "qid": 38,
+      "question": "베테랑 줄거리 알려줘",
+      "qtype": "ambiguous",
+      "subtype": "동명작",
+      "intended_query": "2015년 영화 베테랑의 줄거리 알려줘",
+      "answer": "문서에서 확인할 수 없습니다. (출처: 베테랑3)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.6354018449783325,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.26
+    },
+    {
+      "qid": 39,
+      "question": "하녀 결말이 어떻게 돼?",
+      "qtype": "ambiguous",
+      "subtype": "동명작",
+      "intended_query": "2010년 영화 하녀의 결말 알려줘",
+      "answer": "영화 \"하녀\"의 결말은 동식이 하녀와의 관계를 아내에게 고백한 후, 아내가 하녀를 설득해 유산시키도록 하는 사건이 발생합니다. 하녀는 아이를 잃고 점점 난폭해지며, 결국 동식의 세 아이를 보며 분노를 느끼고 창순을 계단에서 굴러떨어뜨려 죽게 만듭니다. 하녀는 동식에게 협박을 하며 집의 권력 구조를 장악하게 되지만, 마지막에는 동식과 함께 독약을 마시겠다고 하며 동식은 아내의 곁으로 가서 마지막 순간을 맞이합니다. \n\n(출처: 하녀 (1960년 영화))",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5468655824661255,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 2.41
+    },
+    {
+      "qid": 40,
+      "question": "기생충 출연진 알려줘",
+      "qtype": "ambiguous",
+      "subtype": "동명작",
+      "intended_query": "2019년 봉준호 감독 기생충의 출연진 알려줘",
+      "answer": "문서에서 '기생충'의 출연진에 대한 정보는 확인할 수 없습니다. (출처: 기생충 VR)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5140339732170105,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.19
+    },
+    {
+      "qid": 41,
+      "question": "얼굴이라는 영화 줄거리 알려줘",
+      "qtype": "ambiguous",
+      "subtype": "동명작",
+      "intended_query": "2025년 개봉한 연상호 감독 영화 얼굴의 줄거리 알려줘",
+      "answer": "문서에서 확인할 수 없습니다. (출처: 얼굴 (2025년 영화))",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.4046595096588135,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 0.85
+    },
+    {
+      "qid": 42,
+      "question": "김성원이라는 배우에 대해 알려줘",
+      "qtype": "ambiguous",
+      "subtype": "동명이인",
+      "intended_query": "1936년생 배우 김성원에 대해 알려줘",
+      "answer": "김성원(金聖源, 1936년 1월 2일 ~ 2022년 8월 8일)은 대한민국의 배우, 성우, 연극배우입니다. 그는 평양에서 태어나 어린 시절을 원주시에서 보냈으며, 원주농고와 서라벌예술초급대학을 졸업했습니다. 1954년 연극 배우로 데뷔하였고, 1956년 CBS 공채 2기 성우로 정식 데뷔하여 '다이알 Y를 돌려라' 등 라디오 드라마에 출연했습니다. 1970년대 중반부터 50년 이상 당뇨병을 앓으며 건강 관리를 해왔으나, 2022년 초 방광암 말기 판정을 받고 투병하다가 8월 8일에 향년 87세로 세상을 떠났습니다. \n\n(출처: 김성원 (배우))",
+      "score": {
+        "hit": true,
+        "mrr": 1.0,
+        "best_rank": 1
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.3672042489051819,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 3.24
+    },
+    {
+      "qid": 43,
+      "question": "이병헌이 출연한 영화 알려줘",
+      "qtype": "ambiguous",
+      "subtype": "동명이인",
+      "intended_query": "배우 이병헌이 출연한 영화 알려줘",
+      "answer": "이병헌이 출연한 영화는 다음과 같습니다:\n\n1. 《누가 나를 미치게 하는가》(1995)\n2. 《런어웨이》(1995)\n3. 《공동경비구역 JSA》(2000)\n4. 《누구나 비밀은 있다》(2004)\n5. 《달콤한 인생》(2005)\n6. 《그해 여름》(2006)\n7. 《좋은 놈, 나쁜 놈, 이상한 놈》(2008)\n8. 《지.아이.조: 전쟁의 서막》(2009)\n9. 《악마를 보았다》(2010)\n\n(출처: 이병헌)",
+      "score": {
+        "hit": true,
+        "mrr": 0.3333333333333333,
+        "best_rank": 3
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.410092830657959,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 2.39
+    },
+    {
+      "qid": 44,
+      "question": "신성일에 대해서 알려줘",
+      "qtype": "ambiguous",
+      "subtype": "동명 혼동(인물·작품)",
+      "intended_query": "배우 신성일에 대해 알려줘",
+      "answer": "신성일(申星一, 1937년 5월 8일~2018년 11월 4일)은 대한민국의 배우이며, 계명대학교 특임교수와 제16대 국회의원을 지낸 인물입니다. 본명은 강신영(姜信永)이며, 본관은 진주(晋州)입니다. 신성일은 신필름 소속으로 활동하며 예명을 사용하였고, 국회의원 출마 후 본명과 예명을 합쳐 강신성일로 개명하였습니다.\n\n그는 2018년 11월 4일 폐암 투병 끝에 81세의 나이로 사망하였으며, 장례는 영화인장으로 치러졌습니다. 신성일은 1978년 정치에 입문하였고, 여러 차례 국회의원 선거에 출마하였으나 낙선하기도 했습니다. 2003년에는 뇌물 수수 혐의로 구속되었고, 2007년에 특별사면되었습니다. 그의 마지막 영화 작품은 2013년에 개봉한 \"야관문: 욕망의 꽃\"입니다.\n\n(출처: 신성일)",
+      "score": {
+        "hit": true,
+        "mrr": 0.5,
+        "best_rank": 2
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5446330904960632,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 3.63
+    },
+    {
+      "qid": 45,
+      "question": "학생 영화 추천해줘",
+      "qtype": "ambiguous",
+      "subtype": "다축 해석",
+      "intended_query": "학생이 주인공인 한국 영화 추천해줘",
+      "answer": "학생들에게 추천할 만한 영화로는 다음과 같은 작품들이 있습니다:\n\n1. **졸업여행 (2012년)** - 졸업을 앞둔 학생들의 이야기를 다룬 영화로, 대학 졸업영화로 제작되었습니다.\n2. **여고괴담** - 학생과 교사 간의 갈등을 다룬 영화로, 사회적 이슈를 반영하고 있습니다.\n3. **옥희의 영화** - 영화과 학생들의 이야기를 중심으로 한 작품으로, 다양한 인물 간의 관계를 탐구합니다.\n4. **입문반 (2019년)** - 학생들의 일상과 고민을 다룬 영화입니다.\n5. **어느 여대생의 고백 (1980년)** - 여대생의 이야기를 통해 젊은이들의 고민을 다룬 영화입니다.\n\n이 외에도 다양한 학생 관련 영화들이 있으니 참고하시기 바랍니다. (출처: 졸업여행, 여고괴담, 옥희의 영화, 입문반, 어느 여대생의 고백)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5001053214073181,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 3.63
+    },
+    {
+      "qid": 46,
+      "question": "가족 영화 추천해줘",
+      "qtype": "ambiguous",
+      "subtype": "다축 해석",
+      "intended_query": "가족을 소재로 한 한국 영화 추천해줘",
+      "answer": "추천할 만한 가족 영화는 다음과 같습니다:\n\n1. **가족경제학** (2008) - 이성래 감독의 영화로, 임형태 등이 주연으로 출연합니다.\n2. **가족사진** (2010) - 최정유 감독의 영화입니다.\n3. **가족 같은 개, 개 같은 가족** (2007) - 박수용, 박재영 감독의 드라마, 공포, 코미디, 가족 영화로, 안현빈과 정유미가 주연으로 출연합니다.\n4. **가족** (1976) - 최불암 등이 출연한 영화입니다.\n5. **가족** (2004) - 이정철 감독의 영화입니다.\n6. **가족회의** (1962) - 박상호 감독의 가족, 드라마 영화로 도금봉 등이 주연으로 출연합니다.\n7. **가족 나들이** (2006) - 홍승완 감독의 영화로 서영주 등이 주연으로 출연합니다.\n8. **가족의 재구성** (2017) - 최재후 감독의 멜로, 로맨스 영화입니다.\n9. **해바라기 가족** (1961) - 최무룡 등이 출연한 영화입니다.\n\n이 중에서 선택하시면 좋을 것 같습니다. (출처: 가족경제학 (영화))",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.48455917835235596,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 4.77
+    },
+    {
+      "qid": 47,
+      "question": "그 영화 감독이 누구야?",
+      "qtype": "ambiguous",
+      "subtype": "지시어",
+      "intended_query": "기생충 감독이 누구야?",
+      "answer": "문서에서 확인할 수 없습니다. (출처: 필감성)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.48962926864624023,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 0.76
+    },
+    {
+      "qid": 48,
+      "question": "그 배우가 나온 다른 영화 알려줘",
+      "qtype": "ambiguous",
+      "subtype": "지시어",
+      "intended_query": "송강호가 나온 영화 알려줘",
+      "answer": "문서에서 확인할 수 없습니다. (출처: 무도실무관)",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.5002098679542542,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.15
+    },
+    {
+      "qid": 49,
+      "question": "재밌는 영화 추천해줘",
+      "qtype": "ambiguous",
+      "subtype": "광범위",
+      "intended_query": "코미디 영화 추천해줘",
+      "answer": "재밌는 영화로는 \"재밌는 영화\"가 있습니다. 이 영화는 2002년에 개봉한 대한민국 최초의 패러디 영화입니다. 주요 출연진으로는 김수로, 임원희, 김정은 등이 있습니다. \n\n또한, \"가발\"이라는 영화도 추천할 수 있습니다. 이 영화는 2005년에 공개되었습니다.\n\n(출처: 재밌는 영화)",
+      "score": {
+        "hit": true,
+        "mrr": 1.0,
+        "best_rank": 1
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.530339241027832,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 1.78
+    },
+    {
+      "qid": 50,
+      "question": "요즘 볼만한 영화 뭐 있어?",
+      "qtype": "ambiguous",
+      "subtype": "광범위",
+      "intended_query": "2023년 이후 개봉한 한국 영화 추천해줘",
+      "answer": "문서에서 확인할 수 없습니다. (출처: 김창주 (연출가))",
+      "score": {
+        "hit": false,
+        "mrr": 0.0,
+        "best_rank": null
+      },
+      "oracle": {
+        "activated": false,
+        "reason": null,
+        "category": null,
+        "mode": null,
+        "choice_index": null,
+        "rerun_question": null,
+        "rerun": false,
+        "oracle_llm_calls": 0
+      },
+      "clarify_calls": 0,
+      "llm_calls": 1,
+      "top1_distance": 0.49039506912231445,
+      "plan": null,
+      "retry_total": null,
+      "exhausted": null,
+      "exhausted_reason": null,
+      "elapsed_sec": 0.91
+    }
+  ]
+}

@@ -512,14 +512,17 @@ def _normalize_conversion_ids(ids: list) -> list:
 
 
 def _evidence_chunk_ids(state: AgentStateV2) -> list:
-    """승인 규칙 2: 1층 병합 순서 그대로 + 정형 적중 환산 id를 뒤에 추가.
+    """승인 규칙 2 개정(Day 8 본평가 전): 정형 환산 id(인포박스·필모 적중)를
+    유사도 병합 목록의 앞에 배치.
 
+    근거: 정확 일치 조회는 시스템의 최고 신뢰 결과이므로 순위 선두가 실제
+    동작을 반영 — 검색엔진의 정확 일치 우선 원리와 동일. (list 환산 evidence는
+    현행대로 뒤 배치 유지 — generator_node 참조.)
     환산분은 실존 청크로 정규화(검수 반영) — 1층 병합분은 DB에서 나온
     실존 id라 정규화 불요."""
-    ids = [r["id"] for r in state["search_results"]]
-    conv = _normalize_conversion_ids(
+    ids = _normalize_conversion_ids(
         knowledge.structured_chunk_ids(state.get("structured_results") or {}))
-    for i in conv:
+    for i in (r["id"] for r in state["search_results"]):
         if i not in ids:
             ids.append(i)
     return ids
