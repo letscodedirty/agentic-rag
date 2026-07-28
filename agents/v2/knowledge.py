@@ -122,8 +122,30 @@ def infobox_lookup(entities: list) -> list:
 _TOKEN_SYNONYM = {"한국": ("한국", "대한민국"), "대한민국": ("대한민국", "한국")}
 
 
+def _is_hangul(ch: str) -> bool:
+    return "가" <= ch <= "힣"
+
+
+def _variant_in(v: str, cat: str) -> bool:
+    """토큰(변형) 일치에 단어 경계 적용 (Day 9 승인 A).
+
+    근거: 부분 문자열 일치만으로는 '한국'이 '한국어 영화 작품'(7,997건 포괄
+    분류)에 오탐돼, 동점 시 문서 수 우선 규칙과 결합하면 포괄 분류가 항상
+    이긴다(Q32·33 잔존 결함). clarify._base_in_question과 동일 원리의 단어
+    경계 — 일치 위치 뒤가 한글 음절이면 불일치, 조사 '의'만 허용
+    ('한국의 영화'·'대한민국의 좀비 영화'는 유지, '한국어…'는 차단)."""
+    start = cat.find(v)
+    while start != -1:
+        end = start + len(v)
+        after = cat[end] if end < len(cat) else ""
+        if (not after) or (not _is_hangul(after)) or after == "의":
+            return True
+        start = cat.find(v, start + 1)
+    return False
+
+
 def _tok_in(tok: str, cat: str) -> bool:
-    return any(v in cat for v in _TOKEN_SYNONYM.get(tok, (tok,)))
+    return any(_variant_in(v, cat) for v in _TOKEN_SYNONYM.get(tok, (tok,)))
 
 
 def category_lookup(keys: list):
@@ -131,8 +153,20 @@ def category_lookup(keys: list):
 
     포함 실패 시 토큰 폴백(규칙 5 보정 — Day 7 재검증 ③에서 "2019년 개봉 영화"가
     분류명 "2019년 영화"에 부분 문자열로 안 걸리는 어순·수식어 불일치 발견):
-    공백 토큰 2개 이상 일치하는 분류명 중 최다 일치·최단 우선. 토큰 일치는
-    한국↔대한민국 표기 동의어 적용(_tok_in — Day 8 검수 반영).
+    공백 토큰 2개 이상 일치하는 분류명을 정렬 키 (일치 토큰 수, 분류명
+    커버리지, 수록 문서 수, 이름)로 선별. 토큰 일치는 한국↔대한민국 표기
+    동의어(_tok_in, Day 8) + 단어 경계(_variant_in, Day 9 A) 적용.
+
+    Day 9 동점 처리 3단 진화(승인 A2) — 근거:
+    ① 동점 최단 우선: 2건짜리 잡분류 '한국의 영화'가 '2019년 영화' 217건을
+       이김(본평가 Q32·33 실패) → 수록 문서 수 우선 도입.
+    ② 문서 수 우선 단독: 부분 문자열 오탐('한국'⊂'한국어')으로 포괄 분류
+       '한국어 영화 작품' 7,997건이 이김 → 단어 경계 규칙(_variant_in).
+    ③ 경계 적용 후에도 정당한 일치인 '대한민국의 영화 작품' 6,768건이 동점
+       문서 수로 이김(연도 토큰 무변별) → 분류명 커버리지(분류명 토큰 중
+       질문 토큰 일치 비율) 축을 문서 수 앞에 삽입 — '작품'처럼 질문에 없는
+       토큰을 가진 분류를 강등. 5케이스 실측 전부 의도 결과, Day 7 케이스
+       무회귀 확인.
     """
     cats = category_index()
     best = None
@@ -147,11 +181,18 @@ def category_lookup(keys: list):
             if not hits:
                 toks = [t for t in key.split() if t]
                 if len(toks) >= 2:
+                    def _cover(c):
+                        nts = [t for t in c.split() if t]
+                        cov = sum(1 for nt in nts
+                                  if any(_tok_in(q, nt) for q in toks))
+                        return cov / len(nts) if nts else 0.0
+
                     scored = sorted(
-                        (-sum(1 for t in toks if _tok_in(t, c)), len(c), c)
+                        (-sum(1 for t in toks if _tok_in(t, c)),
+                         -_cover(c), -len(cats[c]), c)
                         for c in cats
                         if sum(1 for t in toks if _tok_in(t, c)) >= 2)
-                    hits = [c for _, _, c in scored]
+                    hits = [c for *_, c in scored]
         if hits and (best is None or len(hits[0]) < len(best)):
             best = hits[0]
     if best is None:
