@@ -27,6 +27,11 @@ from core import db  # noqa: E402
 
 app = FastAPI(title="agentic-rag", description="한국어 위키 영화 도메인 Agentic RAG")
 
+# Day 9 추가 결정: 웹 UI도 3시스템 동일 코퍼스 — 기동 시 v2 컬렉션 주입
+# (평가 하네스와 같은 주입 함수 재사용, naive·baseline 코드 동결 유지).
+# 이후 /ask_naive·/ask의 검색과 /health의 청크 수가 모두 v2 1층 기준이 된다.
+db.set_search_collection("v2")
+
 
 class AskRequest(BaseModel):
     question: str = Field(..., min_length=1, description="질문 (한국어)")

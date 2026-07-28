@@ -173,7 +173,8 @@ tab_v2, tab_base, tab_naive = st.tabs(["① v2 (Agentic+3층)", "② baseline", 
 
 # ---------- 탭 ①: v2 (기본 탭) ----------
 with tab_v2:
-    st.caption("검색 코퍼스: 전문 3층 DB (./db_v2 — 섹션 청크·인포박스·필모 색인)")
+    st.caption("검색 코퍼스: 세 시스템 모두 전문 3층 DB(./db_v2)의 섹션 청크를 검색"
+               " — 구조 차이만 비교 (v2는 정형 2·3층 인포박스·필모 색인 추가 사용)")
     top_k_v2 = st.slider("top_k (검색 문서 수)", 1, 10, 10, key="v2_topk")
     q_v2 = st.text_input("질문", key="v2_question",
                          placeholder="예: 배우 유해진이 출연한 영화를 모두 알려줘")
@@ -197,7 +198,8 @@ with tab_v2:
 
 # ---------- 탭 ②: baseline (기존 단독 탭 구성 그대로) ----------
 with tab_base:
-    st.caption("검색 코퍼스: 서두 DB (./db — v1 서두 청크)")
+    st.caption("검색 코퍼스: 세 시스템 모두 전문 3층 DB(./db_v2)의 섹션 청크를 검색"
+               " — 구조 차이만 비교")
     top_k = st.slider("top_k (검색 문서 수)", 1, 10, 5, key="single_topk")
     q1 = st.text_input("질문", key="single_question",
                        placeholder="예: 2012년에 개봉한 영화 러브픽션의 감독은 어떤 학교를 졸업했는가?")
@@ -216,7 +218,8 @@ with tab_base:
 
 # ---------- 탭 ③: naive (입력 + 답변 + 출처만) ----------
 with tab_naive:
-    st.caption("검색 코퍼스: 서두 DB (./db — v1 서두 청크)")
+    st.caption("검색 코퍼스: 세 시스템 모두 전문 3층 DB(./db_v2)의 섹션 청크를 검색"
+               " — 구조 차이만 비교")
     q3 = st.text_input("질문", key="naive_question",
                        placeholder="예: 영화 극한직업의 장르는?")
     if st.button("질문하기", key="naive_ask", type="primary") and q3.strip():

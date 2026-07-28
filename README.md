@@ -58,10 +58,9 @@ python scripts/build_db_v2.py              # ./db_v2 생성 (56,546청크 임베
 
 (`data/v2/pages_snapshot.jsonl.gz`는 수집 원문 스냅샷 — 평가 재현에는 불필요, 해시는 `data/v2/README.md` 참조)
 
-**(선택) 서버 데모** — 웹 UI의 naive·baseline 탭과 `/health`는 v1 DB(`./db`)를 사용하므로 데모를 띄우려면 v1 DB도 구축합니다(1,185청크, 비용 미미):
+**(선택) 서버 데모** — 웹 UI 3탭(v2/baseline/naive)은 세 시스템 모두 v2 코퍼스를 검색합니다(기동 시 주입 — 구조 차이만 비교):
 
 ```bash
-python scripts/build_db.py                 # ./db 생성 (v1)
 uvicorn backend.main:app --port 8000       # FastAPI 백엔드
 streamlit run frontend/app.py              # 웹 UI (탭: v2/baseline/naive)
 ```
