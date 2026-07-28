@@ -113,12 +113,26 @@ def infobox_lookup(entities: list) -> list:
     return out
 
 
+# 분류 토큰 매칭 표기 동의어 (Day 8 검수 반영, 1쌍 한정): 질문 어휘
+# "한국"과 분류 표기 "대한민국(의)"은 문자열이 겹치지 않아('대한민국'은
+# 대·한·민·국이라 '한국'이 연속 부분 문자열이 아님) 토큰 일치가 실패한다.
+# 실측: "한국 좀비 영화"(토큰 한국·좀비·영화)가 '대한민국의 좀비 영화'(2일치)
+# 대신 동점 최단인 '좀비 영화'(외국 영화 1건)로 매칭. 토큰 일치 판정에서만
+# 한국↔대한민국을 동치로 본다.
+_TOKEN_SYNONYM = {"한국": ("한국", "대한민국"), "대한민국": ("대한민국", "한국")}
+
+
+def _tok_in(tok: str, cat: str) -> bool:
+    return any(v in cat for v in _TOKEN_SYNONYM.get(tok, (tok,)))
+
+
 def category_lookup(keys: list):
     """list 경로(승인 규칙 5): 후보 문자열을 포함하는 분류명 중 최단 일치 1건.
 
     포함 실패 시 토큰 폴백(규칙 5 보정 — Day 7 재검증 ③에서 "2019년 개봉 영화"가
     분류명 "2019년 영화"에 부분 문자열로 안 걸리는 어순·수식어 불일치 발견):
-    공백 토큰 2개 이상 일치하는 분류명 중 최다 일치·최단 우선.
+    공백 토큰 2개 이상 일치하는 분류명 중 최다 일치·최단 우선. 토큰 일치는
+    한국↔대한민국 표기 동의어 적용(_tok_in — Day 8 검수 반영).
     """
     cats = category_index()
     best = None
@@ -134,9 +148,9 @@ def category_lookup(keys: list):
                 toks = [t for t in key.split() if t]
                 if len(toks) >= 2:
                     scored = sorted(
-                        (-sum(1 for t in toks if t in c), len(c), c)
+                        (-sum(1 for t in toks if _tok_in(t, c)), len(c), c)
                         for c in cats
-                        if sum(1 for t in toks if t in c) >= 2)
+                        if sum(1 for t in toks if _tok_in(t, c)) >= 2)
                     hits = [c for _, _, c in scored]
         if hits and (best is None or len(hits[0]) < len(best)):
             best = hits[0]

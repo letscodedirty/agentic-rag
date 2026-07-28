@@ -478,10 +478,48 @@ EXTRACT_USER_TMPL = """아래 문서들에서 다음 질의의 답만 추출하�
 JSON: {"answer": "..."}"""
 
 
+def _normalize_conversion_ids(ids: list) -> list:
+    """정형·list 환산 id → 실존 1층 청크 id 정규화 (Day 8 검수 반영).
+
+    근거: 필모 색인의 섹션 출처는 분할 접미사 없는 "인물::섹션"으로
+    기록되므로, 섹션이 길어 분할된 경우 실제 1층 id와 어긋난다(검수 실측:
+    "유해진::출연 작품" vs 실청크 ::1~4). 표성 섹션은 1층에서 제외돼 청크가
+    아예 없을 수도 있다("봉준호::작품 목록"). 처리: 실존 id는 그대로,
+    비실존 id는 접두 일치 분할 청크로 확장, 분할도 없으면 문서 서두로
+    폴백. "::서두"는 전 문서 서두 1청크 보장(v2 전수 정책)이라 조회 없이
+    통과 — 분류 환산(수백 건)에서 불필요한 DB 조회를 막는다.
+    """
+    need = [i for i in ids if not i.endswith("::서두")]
+    by_title = {}
+    if need:
+        titles = sorted({i.split("::")[0] for i in need})
+        for c in db.get_v2_by_titles(titles):
+            by_title.setdefault(c["title"], set()).add(c["id"])
+    out = []
+    for i in ids:
+        if i.endswith("::서두"):
+            out.append(i)
+            continue
+        have = by_title.get(i.split("::")[0], set())
+        if i in have:
+            out.append(i)
+            continue
+        splits = sorted(
+            (x for x in have if x.startswith(i + "::")),
+            key=lambda x: int(x.rsplit("::", 1)[1]))
+        out.extend(splits if splits else [i.split("::")[0] + "::서두"])
+    return list(dict.fromkeys(out))
+
+
 def _evidence_chunk_ids(state: AgentStateV2) -> list:
-    """승인 규칙 2: 1층 병합 순서 그대로 + 정형 적중 환산 id를 뒤에 추가."""
+    """승인 규칙 2: 1층 병합 순서 그대로 + 정형 적중 환산 id를 뒤에 추가.
+
+    환산분은 실존 청크로 정규화(검수 반영) — 1층 병합분은 DB에서 나온
+    실존 id라 정규화 불요."""
     ids = [r["id"] for r in state["search_results"]]
-    for i in knowledge.structured_chunk_ids(state.get("structured_results") or {}):
+    conv = _normalize_conversion_ids(
+        knowledge.structured_chunk_ids(state.get("structured_results") or {}))
+    for i in conv:
         if i not in ids:
             ids.append(i)
     return ids
@@ -776,7 +814,7 @@ def generator_node(state: AgentStateV2) -> dict:
          {"role": "user", "content": user}],
     )
     chunk_ids = _evidence_chunk_ids(state)
-    for i in list_chunk_ids(state.get("list_results") or {}):
+    for i in _normalize_conversion_ids(list_chunk_ids(state.get("list_results") or {})):
         if i not in chunk_ids:
             chunk_ids.append(i)
     return {
